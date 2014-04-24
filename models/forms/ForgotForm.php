@@ -1,6 +1,6 @@
 <?php
 
-namespace amnah\yii2\user\models\forms;
+namespace filsh\yii2\user\models\forms;
 
 use Yii;
 use yii\base\Model;
@@ -16,7 +16,7 @@ class ForgotForm extends Model {
     public $email;
 
     /**
-     * @var \amnah\yii2\user\models\User
+     * @var \filsh\yii2\user\models\User
      */
     protected $_user = false;
 
@@ -50,7 +50,7 @@ class ForgotForm extends Model {
     /**
      * Get user based on email
      *
-     * @return \amnah\yii2\user\models\User|null
+     * @return \filsh\yii2\user\models\User|null
      */
     public function getUser() {
         if ($this->_user === false) {
@@ -71,7 +71,7 @@ class ForgotForm extends Model {
         if ($this->validate()) {
 
             // get user
-            /** @var \amnah\yii2\user\models\Userkey $userkey */
+            /** @var \filsh\yii2\user\models\Userkey $userkey */
             $user = $this->getUser();
 
             // calculate expireTime (converting strtotime) and create userkey object

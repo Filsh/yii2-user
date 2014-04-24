@@ -1,6 +1,6 @@
 <?php
 
-namespace amnah\yii2\user\models\forms;
+namespace filsh\yii2\user\models\forms;
 
 use Yii;
 use yii\base\Model;
@@ -26,7 +26,7 @@ class LoginForm extends Model {
     public $rememberMe = true;
 
     /**
-     * @var \amnah\yii2\user\models\User
+     * @var \filsh\yii2\user\models\User
      */
     protected $_user = false;
 
@@ -80,7 +80,7 @@ class LoginForm extends Model {
         }
         // check for inactive status and resend email
         if ($user->status == $user::STATUS_INACTIVE) {
-            /** @var \amnah\yii2\user\models\Userkey $userkey */
+            /** @var \filsh\yii2\user\models\Userkey $userkey */
             $userkey = Yii::$app->getModule("user")->model("Userkey");
             $userkey = $userkey::generate($user->id, $userkey::TYPE_EMAIL_ACTIVATE);
             $user->sendEmailConfirmation($userkey);
@@ -99,7 +99,7 @@ class LoginForm extends Model {
         }
 
         // check password
-        /** @var \amnah\yii2\user\models\User $user */
+        /** @var \filsh\yii2\user\models\User $user */
         $user = $this->getUser();
         if (!$user->verifyPassword($this->password)) {
             $this->addError("password", "Incorrect password");
@@ -109,7 +109,7 @@ class LoginForm extends Model {
     /**
      * Get user based on email and/or username
      *
-     * @return \amnah\yii2\user\models\User|null
+     * @return \filsh\yii2\user\models\User|null
      */
     public function getUser() {
 

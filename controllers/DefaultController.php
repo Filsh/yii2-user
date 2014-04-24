@@ -1,6 +1,6 @@
 <?php
 
-namespace amnah\yii2\user\controllers;
+namespace filsh\yii2\user\controllers;
 
 use Yii;
 use yii\web\Controller;
@@ -78,7 +78,7 @@ class DefaultController extends Controller {
     public function actionLogin() {
 
         // load data from $_POST and attempt login
-        /** @var \amnah\yii2\user\models\forms\LoginForm $model */
+        /** @var \filsh\yii2\user\models\forms\LoginForm $model */
         $model = Yii::$app->getModule("user")->model("LoginForm");
         if ($model->load($_POST) && $model->login(Yii::$app->getModule("user")->loginDuration)) {
             return $this->goBack(Yii::$app->getModule("user")->loginRedirect);
@@ -104,8 +104,8 @@ class DefaultController extends Controller {
     public function actionRegister() {
 
         // set up user/profile and attempt to load data from $_POST
-        /** @var \amnah\yii2\user\models\User $user */
-        /** @var \amnah\yii2\user\models\Profile $profile */
+        /** @var \filsh\yii2\user\models\User $user */
+        /** @var \filsh\yii2\user\models\Profile $profile */
         $user = Yii::$app->getModule("user")->model("User", ["scenario" => "register"]);
         $profile = Yii::$app->getModule("user")->model("Profile");
         if ($user->load($_POST)) {
@@ -121,7 +121,7 @@ class DefaultController extends Controller {
             if ($user->validate() and $profile->validate()) {
 
                 // perform registration
-                /** @var \amnah\yii2\user\models\Role $role */
+                /** @var \filsh\yii2\user\models\Role $role */
                 $role = Yii::$app->getModule("user")->model("Role");
                 $user->register($role::ROLE_USER, Yii::$app->request->userIP);
                 $profile->register($user->id);
@@ -145,13 +145,13 @@ class DefaultController extends Controller {
     /**
      * Calculate whether we need to send confirmation email or log user in based on user's status
      *
-     * @param \amnah\yii2\user\models\User $user
+     * @param \filsh\yii2\user\models\User $user
      */
     protected function _calcEmailOrLogin($user) {
 
         // determine userkey type to see if we need to send email
-        /** @var \amnah\yii2\user\models\User $user */
-        /** @var \amnah\yii2\user\models\Userkey $userkey */
+        /** @var \filsh\yii2\user\models\User $user */
+        /** @var \filsh\yii2\user\models\Userkey $userkey */
         $userkeyType = null;
         $userkey = Yii::$app->getModule("user")->model("Userkey");
         if ($user->status == $user::STATUS_INACTIVE) {
@@ -184,14 +184,14 @@ class DefaultController extends Controller {
     public function actionConfirm($key) {
 
         // search for userkey
-        /** @var \amnah\yii2\user\models\Userkey $userkey */
+        /** @var \filsh\yii2\user\models\Userkey $userkey */
         $success = false;
         $userkey = Yii::$app->getModule("user")->model("Userkey");
         $userkey = $userkey::findActiveByKey($key, [$userkey::TYPE_EMAIL_ACTIVATE, $userkey::TYPE_EMAIL_CHANGE]);
         if ($userkey) {
 
             // confirm user
-            /** @var \amnah\yii2\user\models\User $user */
+            /** @var \filsh\yii2\user\models\User $user */
             $user = Yii::$app->getModule("user")->model("User");
             $user = $user::findOne($userkey->user_id);
             $user->confirm();
@@ -214,7 +214,7 @@ class DefaultController extends Controller {
     public function actionAccount() {
 
         // set up user/profile and attempt to load data from $_POST
-        /** @var \amnah\yii2\user\models\User $user */
+        /** @var \filsh\yii2\user\models\User $user */
         $user = Yii::$app->user->identity;
         $user->setScenario("account");
         if ($user->load($_POST)) {
@@ -231,7 +231,7 @@ class DefaultController extends Controller {
                 // generate userkey and send email if user changed his email
                 if (Yii::$app->getModule("user")->emailChangeConfirmation and $user->checkAndPrepareEmailChange()) {
 
-                    /** @var \amnah\yii2\user\models\Userkey $userkey */
+                    /** @var \filsh\yii2\user\models\Userkey $userkey */
                     $userkey = Yii::$app->getModule("user")->model("Userkey");
                     $userkey = $userkey::generate($user->id, $userkey::TYPE_EMAIL_CHANGE);
                     if (!$numSent = $user->sendEmailConfirmation($userkey)) {
@@ -260,7 +260,7 @@ class DefaultController extends Controller {
     public function actionProfile() {
 
         // set up profile and attempt to load data from $_POST
-        /** @var \amnah\yii2\user\models\Profile $profile */
+        /** @var \filsh\yii2\user\models\Profile $profile */
         $profile = Yii::$app->user->identity->profile;
         if ($profile->load($_POST)) {
 
@@ -289,7 +289,7 @@ class DefaultController extends Controller {
     public function actionResend() {
 
         // attempt to load $_POST data, validate, and send email
-        /** @var \amnah\yii2\user\models\forms\ResendForm $model */
+        /** @var \filsh\yii2\user\models\forms\ResendForm $model */
         $model = Yii::$app->getModule("user")->model("ResendForm");
         if ($model->load($_POST) && $model->sendEmail()) {
 
@@ -310,11 +310,11 @@ class DefaultController extends Controller {
     public function actionResendChange() {
 
         // attempt to find userkey and get user/profile to send confirmation email
-        /** @var \amnah\yii2\user\models\Userkey $userkey */
+        /** @var \filsh\yii2\user\models\Userkey $userkey */
         $userkey = Yii::$app->getModule("user")->model("Userkey");
         $userkey = $userkey::findActiveByUser(Yii::$app->user->id, $userkey::TYPE_EMAIL_CHANGE);
         if ($userkey) {
-            /** @var \amnah\yii2\user\models\User $user */
+            /** @var \filsh\yii2\user\models\User $user */
             $user = Yii::$app->user->identity;
             $user->sendEmailConfirmation($userkey);
 
@@ -332,13 +332,13 @@ class DefaultController extends Controller {
     public function actionCancel() {
 
         // attempt to find userkey
-        /** @var \amnah\yii2\user\models\Userkey $userkey */
+        /** @var \filsh\yii2\user\models\Userkey $userkey */
         $userkey = Yii::$app->getModule("user")->model("Userkey");
         $userkey = $userkey::findActiveByUser(Yii::$app->user->id, $userkey::TYPE_EMAIL_CHANGE);
         if ($userkey) {
 
             // remove user.new_email
-            /** @var \amnah\yii2\user\models\User $user */
+            /** @var \filsh\yii2\user\models\User $user */
             $user = Yii::$app->user->identity;
             $user->new_email = null;
             $user->save(false);
@@ -358,7 +358,7 @@ class DefaultController extends Controller {
     public function actionForgot() {
 
         // attempt to load $_POST data, validate, and send email
-        /** @var \amnah\yii2\user\models\forms\ForgotForm $model */
+        /** @var \filsh\yii2\user\models\forms\ForgotForm $model */
         $model = Yii::$app->getModule("user")->model("ForgotForm");
         if ($model->load($_POST) && $model->sendForgotEmail()) {
 
@@ -379,7 +379,7 @@ class DefaultController extends Controller {
     public function actionReset($key) {
 
         // check for invalid userkey
-        /** @var \amnah\yii2\user\models\Userkey $userkey */
+        /** @var \filsh\yii2\user\models\Userkey $userkey */
         $userkey = Yii::$app->getModule("user")->model("Userkey");
         $userkey = $userkey::findActiveByKey($key, $userkey::TYPE_PASSWORD_RESET);
         if (!$userkey) {
@@ -387,7 +387,7 @@ class DefaultController extends Controller {
         }
 
         // attempt to load $_POST data, validate, and reset user password
-        /** @var \amnah\yii2\user\models\forms\ResetForm $model */
+        /** @var \filsh\yii2\user\models\forms\ResetForm $model */
         $success = false;
         $model = Yii::$app->getModule("user")->model("ResetForm", ["userkey" => $userkey]);
         if ($model->load($_POST) && $model->resetPassword()) {

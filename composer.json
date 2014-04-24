@@ -4,6 +4,10 @@
     "keywords": ["yii", "yii2", "user", "auth", "authentication"],
     "type": "yii2-extension",
     "license": "MIT",
+    "support": {
+        "email": "imaliy.filsh@gmail.com",
+        "source": "https://github.com/filsh/yii2-user"
+    },
     "authors": [
         {
             "name": "amnah",
@@ -18,6 +22,8 @@
         "yiisoft/yii2": "*"
     },
     "autoload": {
-        "psr-4": { "filsh\\yii2\\user\\": "" }
+        "psr-4": {
+            "filsh\\yii2\\user\\": ""
+        }
     }
 }

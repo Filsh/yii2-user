@@ -1,6 +1,6 @@
 <?php
 
-namespace amnah\yii2\user\controllers;
+namespace filsh\yii2\user\controllers;
 
 use Yii;
 use yii\web\Controller;
@@ -57,7 +57,7 @@ class AdminController extends Controller {
      */
     public function actionIndex() {
 
-        /** @var \amnah\yii2\user\models\search\UserSearch $searchModel */
+        /** @var \filsh\yii2\user\models\search\UserSearch $searchModel */
         $searchModel = Yii::$app->getModule("user")->model("UserSearch");
         $dataProvider = $searchModel->search($_GET);
 
@@ -87,8 +87,8 @@ class AdminController extends Controller {
      */
     public function actionCreate() {
 
-        /** @var \amnah\yii2\user\models\User $user */
-        /** @var \amnah\yii2\user\models\Profile $profile */
+        /** @var \filsh\yii2\user\models\User $user */
+        /** @var \filsh\yii2\user\models\Profile $profile */
         $user = Yii::$app->getModule("user")->model("User");
         $user->setScenario("admin");
         $profile = Yii::$app->getModule("user")->model("Profile");
@@ -154,7 +154,7 @@ class AdminController extends Controller {
      * If the model is not found, a 404 HTTP exception will be thrown.
      *
      * @param string $id
-     * @return \amnah\yii2\user\models\User the loaded model
+     * @return \filsh\yii2\user\models\User the loaded model
      * @throws HttpException if the model cannot be found
      */
     protected function findModel($id) {

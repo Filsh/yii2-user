@@ -5,7 +5,7 @@ use yii\widgets\ActiveForm;
 /**
  * @var yii\web\View $this
  * @var yii\widgets\ActiveForm $form
- * @var amnah\yii2\user\models\Profile $profile
+ * @var filsh\yii2\user\models\Profile $profile
  */
 $this->title = 'Profile';
 $this->params['breadcrumbs'][] = $this->title;

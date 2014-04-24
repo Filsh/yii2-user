@@ -5,8 +5,8 @@ use yii\widgets\ActiveForm;
 /**
  * @var yii\web\View $this
  * @var yii\widgets\ActiveForm $form
- * @var amnah\yii2\user\models\User $user
- * @var amnah\yii2\user\models\User $userSuccess
+ * @var filsh\yii2\user\models\User $user
+ * @var filsh\yii2\user\models\User $userSuccess
  */
 $this->title = 'Account';
 $this->params['breadcrumbs'][] = $this->title;

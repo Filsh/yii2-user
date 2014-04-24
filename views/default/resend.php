@@ -6,7 +6,7 @@ use yii\captcha\Captcha;
 /**
  * @var yii\web\View $this
  * @var yii\widgets\ActiveForm $form
- * @var amnah\yii2\user\models\forms\Resend $model
+ * @var filsh\yii2\user\models\forms\Resend $model
  */
 $this->title = 'Resend';
 $this->params['breadcrumbs'][] = $this->title;

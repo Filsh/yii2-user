@@ -1,6 +1,6 @@
 <?php
 
-namespace amnah\yii2\user\models\forms;
+namespace filsh\yii2\user\models\forms;
 
 use Yii;
 use yii\base\Model;
@@ -11,7 +11,7 @@ use yii\base\Model;
 class ResetForm extends Model {
 
     /**
-     * @var \amnah\yii2\user\models\Userkey
+     * @var \filsh\yii2\user\models\Userkey
      */
     public $userkey;
 
@@ -32,7 +32,7 @@ class ResetForm extends Model {
     public $newPasswordConfirm;
 
     /**
-     * @var \amnah\yii2\user\models\User
+     * @var \filsh\yii2\user\models\User
      */
     protected $_user = false;
 
@@ -121,7 +121,7 @@ class ResetForm extends Model {
     /**
      * Get user based on userkey.user_id
      *
-     * @return \amnah\yii2\user\models\User|null
+     * @return \filsh\yii2\user\models\User|null
      */
     public function getUser() {
         if ($this->_user === false) {

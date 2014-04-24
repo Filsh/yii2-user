@@ -8,9 +8,9 @@ $role = \Yii::$app->getModule("user")->model("Role");
 /**
  * @var yii\web\View $this
  * @var yii\data\ActiveDataProvider $dataProvider
- * @var amnah\yii2\user\models\User $user
- * @var amnah\yii2\user\models\Role $role
- * @var amnah\yii2\user\models\search\UserSearch $searchModel
+ * @var filsh\yii2\user\models\User $user
+ * @var filsh\yii2\user\models\Role $role
+ * @var filsh\yii2\user\models\search\UserSearch $searchModel
  */
 
 $this->title = 'Users';

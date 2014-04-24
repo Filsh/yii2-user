@@ -1,6 +1,6 @@
 <?php
 
-namespace amnah\yii2\user;
+namespace filsh\yii2\user;
 
 use Yii;
 use yii\db\ActiveRecord;
@@ -94,11 +94,11 @@ class Module extends \yii\base\Module {
     public $emailViewPath = "@user/mails";
 
     /**
-     * @var array Model classes, e.g., ["User" => "amnah\yii2\user\models\User"]
+     * @var array Model classes, e.g., ["User" => "filsh\yii2\user\models\User"]
      * Usage:
      *   $user = Yii::$app->getModule("user")->model("User", $config);
      *   (equivalent to)
-     *   $user = new \amnah\yii2\user\models\User($config);
+     *   $user = new \filsh\yii2\user\models\User($config);
      *
      * The model classes here will be merged with/override the [[_getDefaultModelClasses()|default ones]]
      */
@@ -174,15 +174,15 @@ class Module extends \yii\base\Module {
         
         // use single quotes so nothing gets escaped
         return [
-            'User' => 'amnah\yii2\user\models\User',
-            'Profile' => 'amnah\yii2\user\models\Profile',
-            'Role' => 'amnah\yii2\user\models\Role',
-            'Userkey' => 'amnah\yii2\user\models\Userkey',
-            'ForgotForm' => 'amnah\yii2\user\models\forms\ForgotForm',
-            'LoginForm' => 'amnah\yii2\user\models\forms\LoginForm',
-            'ResendForm' => 'amnah\yii2\user\models\forms\ResendForm',
-            'ResetForm' => 'amnah\yii2\user\models\forms\ResetForm',
-            'UserSearch' => 'amnah\yii2\user\models\search\UserSearch',
+            'User' => 'filsh\yii2\user\models\User',
+            'Profile' => 'filsh\yii2\user\models\Profile',
+            'Role' => 'filsh\yii2\user\models\Role',
+            'Userkey' => 'filsh\yii2\user\models\Userkey',
+            'ForgotForm' => 'filsh\yii2\user\models\forms\ForgotForm',
+            'LoginForm' => 'filsh\yii2\user\models\forms\LoginForm',
+            'ResendForm' => 'filsh\yii2\user\models\forms\ResendForm',
+            'ResetForm' => 'filsh\yii2\user\models\forms\ResetForm',
+            'UserSearch' => 'filsh\yii2\user\models\search\UserSearch',
         ];
     }
 

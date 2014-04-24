@@ -1,6 +1,6 @@
 <?php
 
-namespace amnah\yii2\user\controllers;
+namespace filsh\yii2\user\controllers;
 
 use Yii;
 use yii\web\HttpException;
@@ -14,7 +14,7 @@ class CopyController extends Controller {
     /**
      * @var string From path
      */
-    public $from = "@vendor/amnah/yii2-user";
+    public $from = "@vendor/filsh/yii2-user";
 
     /**
      * @var string To path
@@ -80,7 +80,7 @@ class CopyController extends Controller {
             echo "--- Copy cancelled! --- \r\n";
             echo "\r\n";
             echo "You can specify the paths using:\r\n\r\n";
-            echo "    php yii user/copy --from=@vendor/amnah/yii2-user";
+            echo "    php yii user/copy --from=@vendor/filsh/yii2-user";
             echo " --to=@app/modules/user --namespace=app\\\\modules\\\\user";
             echo "\r\n";
         }
@@ -117,7 +117,7 @@ class CopyController extends Controller {
 
             // get file content and replace namespace
             $content = file_get_contents($file);
-            $content = str_replace("amnah\\yii2\\user", $namespace, $content);
+            $content = str_replace("filsh\\yii2\\user", $namespace, $content);
 
             // save and store result
             if (file_exists($newFilePath)) {

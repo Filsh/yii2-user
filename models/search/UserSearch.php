@@ -1,6 +1,6 @@
 <?php
 
-namespace amnah\yii2\user\models\search;
+namespace filsh\yii2\user\models\search;
 
 use Yii;
 use yii\base\Model;
