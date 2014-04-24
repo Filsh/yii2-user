@@ -1,7 +1,7 @@
 Yii 2 User
 =========
 
-Yii 2 User - User authentication module
+Yii 2 User - User authentication module 
 
 ## Demo
 
