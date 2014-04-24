@@ -1,5 +1,5 @@
 {
-    "name": "amnah/yii2-user",
+    "name": "filsh/yii2-user",
     "description": "Yii 2 user authentication module",
     "keywords": ["yii", "yii2", "user", "auth", "authentication"],
     "type": "yii2-extension",
@@ -8,12 +8,16 @@
         {
             "name": "amnah",
             "email": "amnah.dev@gmail.com"
+        },
+        {
+            "name": "Igor Maliy",
+            "email": "imaliy.filsh@gmail.com"
         }
     ],
     "require": {
         "yiisoft/yii2": "*"
     },
     "autoload": {
-        "psr-4": { "amnah\\yii2\\user\\": "" }
+        "psr-4": { "filsh\\yii2\\user\\": "" }
     }
 }
