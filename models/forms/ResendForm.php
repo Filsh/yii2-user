@@ -8,8 +8,8 @@ use yii\base\Model;
 /**
  * Forgot password form
  */
-class ResendForm extends Model {
-
+class ResendForm extends Model
+{
     /**
      * @var string Username and/or email
      */
@@ -23,29 +23,28 @@ class ResendForm extends Model {
     /**
      * @return array the validation rules.
      */
-    public function rules() {
+    public function rules()
+    {
         return [
-            ["email", "required"],
-            ["email", "email"],
-            ["email", "validateEmailInactive"],
-            ["email", "filter", "filter" => "trim"],
+            ['email', 'required'],
+            ['email', 'email'],
+            ['email', 'validateEmailInactive'],
+            ['email', 'filter', 'filter' => 'trim'],
         ];
     }
 
     /**
      * Validate email exists and set user property
      */
-    public function validateEmailInactive() {
-
+    public function validateEmailInactive()
+    {
         // check for valid user
         $user = $this->getUser();
         if (!$user) {
-            $this->addError("email", "Email not found");
-        }
-        elseif ($user->status == $user::STATUS_ACTIVE) {
-            $this->addError("email", "Email is already active");
-        }
-        else {
+            $this->addError('email', 'Email not found');
+        } elseif ($user->status == $user::STATUS_ACTIVE) {
+            $this->addError('email', 'Email is already active');
+        } else {
             $this->_user = $user;
         }
     }
@@ -55,14 +54,15 @@ class ResendForm extends Model {
      *
      * @return \filsh\yii2\user\models\User|null
      */
-    public function getUser() {
+    public function getUser()
+    {
         if ($this->_user === false) {
-            $user = Yii::$app->getModule("user")->model("User");
+            $user = Yii::$app->getModule('user')->model('User');
 
             // check email first, then new_email (former is indexed, latter is not)
-            $this->_user = $user::findOne(["email" => $this->email]);
+            $this->_user = $user::findOne(['email' => $this->email]);
             if (!$this->_user) {
-                $this->_user = $user::findOne(["new_email" => $this->email]);
+                $this->_user = $user::findOne(['new_email' => $this->email]);
             }
         }
         return $this->_user;
@@ -73,15 +73,15 @@ class ResendForm extends Model {
      *
      * @return bool
      */
-    public function sendEmail() {
-
+    public function sendEmail()
+    {
         // validate
         if ($this->validate()) {
 
             // get user
             /** @var \filsh\yii2\user\models\Userkey $userkey */
             $user = $this->getUser();
-            $userkey = Yii::$app->getModule("user")->model("Userkey");
+            $userkey = Yii::$app->getModule('user')->model('Userkey');
 
             // calculate type
             if ($user->status == $user::STATUS_INACTIVE) {

@@ -8,8 +8,8 @@ use yii\base\Model;
 /**
  * Reset password form
  */
-class ResetForm extends Model {
-
+class ResetForm extends Model
+{
     /**
      * @var \filsh\yii2\user\models\Userkey
      */
@@ -39,19 +39,19 @@ class ResetForm extends Model {
     /**
      * @return array the validation rules.
      */
-    public function rules() {
-
+    public function rules()
+    {
         // set initial rules
         $rules = [
             // uncomment these lines if you want users to confirm their email address
             /*
-            [["email"], "required"],
-            [["email"], "email"],
-            [["email"], "validateUserkeyEmail"],
-            [["email"], "filter", "filter" => "trim"],
-            */
-            [["newPassword", "newPasswordConfirm"], "required"],
-            [["newPasswordConfirm"], "compare", "compareAttribute" => "newPassword", "message" => "Passwords do not match"]
+              [['email'], 'required'],
+              [['email'], 'email'],
+              [['email'], 'validateUserkeyEmail'],
+              [['email'], 'filter', 'filter' => 'trim'],
+             */
+            [['newPassword', 'newPasswordConfirm'], 'required'],
+            [['newPasswordConfirm'], 'compare', 'compareAttribute' => 'newPassword', 'message' => 'Passwords do not match']
         ];
 
         // add and return user rules
@@ -64,10 +64,10 @@ class ResetForm extends Model {
      * @param $rules
      * @return array
      */
-    protected function _copyNewPasswordRules($rules) {
-
+    protected function _copyNewPasswordRules($rules)
+    {
         // go through user rules
-        $user = Yii::$app->getModule("user")->model("User");
+        $user = Yii::$app->getModule('user')->model('User');
         $userRules = $user->rules();
         foreach ($userRules as $rule) {
 
@@ -81,10 +81,10 @@ class ResetForm extends Model {
             }
 
             // check for newPassword attribute and that it's not required
-            if (in_array("newPassword", $attribute) and $validator != "required") {
+            if (in_array('newPassword', $attribute) and $validator != 'required') {
 
                 // overwrite the attribute
-                $rule[0] = ["newPassword"];
+                $rule[0] = ['newPassword'];
 
                 // add to rules
                 $rules[] = $rule;
@@ -99,22 +99,23 @@ class ResetForm extends Model {
      *
      * @deprecated
      */
-    public function validateUserkeyEmail() {
-
+    public function validateUserkeyEmail()
+    {
         // compare user's email
         $user = $this->getUser();
         if (!$user or ($user->email !== $this->email)) {
-            $this->addError("email", "Incorrect email");
+            $this->addError('email', 'Incorrect email');
         }
     }
 
     /**
      * @inheritdoc
      */
-    public function attributeLabels() {
+    public function attributeLabels()
+    {
         return [
-            "newPassword" => "New Password",
-            "newPasswordConfirm" => "Confirm New Password",
+            'newPassword' => 'New Password',
+            'newPasswordConfirm' => 'Confirm New Password',
         ];
     }
 
@@ -123,9 +124,10 @@ class ResetForm extends Model {
      *
      * @return \filsh\yii2\user\models\User|null
      */
-    public function getUser() {
+    public function getUser()
+    {
         if ($this->_user === false) {
-            $user = Yii::$app->getModule("user")->model("User");
+            $user = Yii::$app->getModule('user')->model('User');
             $this->_user = $user::findOne($this->userkey->user_id);
         }
         return $this->_user;
@@ -136,8 +138,8 @@ class ResetForm extends Model {
      *
      * @return bool
      */
-    public function resetPassword() {
-
+    public function resetPassword()
+    {
         // validate
         if ($this->validate()) {
 

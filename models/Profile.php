@@ -16,19 +16,21 @@ use yii\db\ActiveRecord;
  *
  * @property User $user
  */
-class Profile extends ActiveRecord {
-
+class Profile extends ActiveRecord
+{
     /**
      * @inheritdoc
      */
-    public static function tableName() {
-        return static::getDb()->tablePrefix . "profile";
+    public static function tableName()
+    {
+        return static::getDb()->tablePrefix . 'profile';
     }
 
     /**
      * @inheritdoc
      */
-    public function rules() {
+    public function rules()
+    {
         return [
 //            [['user_id'], 'required'],
 //            [['user_id'], 'integer'],
@@ -40,7 +42,8 @@ class Profile extends ActiveRecord {
     /**
      * @inheritdoc
      */
-    public function attributeLabels() {
+    public function attributeLabels()
+    {
         return [
             'id' => 'ID',
             'user_id' => 'User ID',
@@ -53,15 +56,17 @@ class Profile extends ActiveRecord {
     /**
      * @return \yii\db\ActiveRelation
      */
-    public function getUser() {
-        $user = Yii::$app->getModule("user")->model("User");
+    public function getUser()
+    {
+        $user = Yii::$app->getModule('user')->model('User');
         return $this->hasOne($user::className(), ['id' => 'user_id']);
     }
 
     /**
      * @inheritdoc
      */
-    public function behaviors() {
+    public function behaviors()
+    {
         return [
             'timestamp' => [
                 'class' => 'yii\behaviors\TimestampBehavior',
@@ -69,7 +74,9 @@ class Profile extends ActiveRecord {
                     ActiveRecord::EVENT_BEFORE_INSERT => 'create_time',
                     ActiveRecord::EVENT_BEFORE_UPDATE => 'update_time',
                 ],
-                'value' => function() { return date("Y-m-d H:i:s"); },
+                'value' => function() {
+                    return date('Y-m-d H:i:s');
+                },
             ],
         ];
     }
@@ -80,8 +87,8 @@ class Profile extends ActiveRecord {
      * @param int $userId
      * @return static
      */
-    public function register($userId) {
-
+    public function register($userId)
+    {
         $this->user_id = $userId;
         $this->save();
         return $this;
@@ -93,8 +100,8 @@ class Profile extends ActiveRecord {
      * @param int $userId
      * @return static
      */
-    public function setUser($userId) {
-
+    public function setUser($userId)
+    {
         $this->user_id = $userId;
         return $this;
     }

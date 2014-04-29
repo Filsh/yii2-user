@@ -7,27 +7,28 @@ use yii\web\Controller;
 use yii\web\Response;
 use yii\filters\AccessControl;
 use yii\widgets\ActiveForm;
+use filsh\yii2\user\models\User;
 
 /**
  * Default controller for User module
  */
-class DefaultController extends Controller {
-
+class DefaultController extends Controller
+{
     /**
      * Get view path based on module property
      *
      * @return string
      */
-    public function getViewPath() {
-        return Yii::$app->getModule("user")->viewPath
-            ? rtrim(Yii::$app->getModule("user")->viewPath, "/\\") . DIRECTORY_SEPARATOR . $this->id
-            : parent::getViewPath();
+    public function getViewPath()
+    {
+        return Yii::$app->getModule('user')->viewPath ? rtrim(Yii::$app->getModule('user')->viewPath, '/\\') . DIRECTORY_SEPARATOR . $this->id : parent::getViewPath();
     }
 
     /**
      * @inheritdoc
      */
-    public function behaviors() {
+    public function behaviors()
+    {
         return [
             'access' => [
                 'class' => AccessControl::className(),
@@ -55,33 +56,35 @@ class DefaultController extends Controller {
     /**
      * Display index
      */
-    public function actionIndex() {
+    public function actionIndex()
+    {
 
         // display debug page if YII_DEBUG is set
-        if (defined('YII_DEBUG') and YII_DEBUG) {
-            $actions = Yii::$app->getModule("user")->getActions();
-            return $this->render('index', ["actions" => $actions]);
+        if (defined('YII_DEBUG') && YII_DEBUG) {
+            $actions = Yii::$app->getModule('user')->getActions();
+            return $this->render('index', ['actions' => $actions]);
         }
         // redirect to login page if user is guest
         elseif (Yii::$app->user->isGuest) {
-            return $this->redirect(["/user/login"]);
+            return $this->redirect(['/user/login']);
         }
         // redirect to account page if user is logged in
         else {
-            return $this->redirect(["/user/account"]);
+            return $this->redirect(['/user/account']);
         }
     }
 
     /**
      * Display login page and log user in
      */
-    public function actionLogin() {
+    public function actionLogin()
+    {
 
         // load data from $_POST and attempt login
         /** @var \filsh\yii2\user\models\forms\LoginForm $model */
-        $model = Yii::$app->getModule("user")->model("LoginForm");
-        if ($model->load($_POST) && $model->login(Yii::$app->getModule("user")->loginDuration)) {
-            return $this->goBack(Yii::$app->getModule("user")->loginRedirect);
+        $model = Yii::$app->getModule('user')->model('LoginForm');
+        if ($model->load($_POST) && $model->login(Yii::$app->getModule('user')->loginDuration)) {
+            return $this->goBack(Yii::$app->getModule('user')->loginRedirect);
         }
 
         // render view
@@ -93,21 +96,22 @@ class DefaultController extends Controller {
     /**
      * Log user out and redirect home
      */
-    public function actionLogout() {
+    public function actionLogout()
+    {
         Yii::$app->user->logout();
-        return $this->redirect(Yii::$app->getModule("user")->logoutRedirect);
+        return $this->redirect(Yii::$app->getModule('user')->logoutRedirect);
     }
 
     /**
      * Display register page
      */
-    public function actionRegister() {
-
+    public function actionRegister()
+    {
         // set up user/profile and attempt to load data from $_POST
         /** @var \filsh\yii2\user\models\User $user */
         /** @var \filsh\yii2\user\models\Profile $profile */
-        $user = Yii::$app->getModule("user")->model("User", ["scenario" => "register"]);
-        $profile = Yii::$app->getModule("user")->model("Profile");
+        $user = Yii::$app->getModule('user')->model('User', ['scenario' => User::SCENARIO_REGISTER]);
+        $profile = Yii::$app->getModule('user')->model('Profile');
         if ($user->load($_POST)) {
 
             // validate for ajax request
@@ -118,11 +122,11 @@ class DefaultController extends Controller {
             }
 
             // validate for normal request
-            if ($user->validate() and $profile->validate()) {
+            if ($user->validate() && $profile->validate()) {
 
                 // perform registration
                 /** @var \filsh\yii2\user\models\Role $role */
-                $role = Yii::$app->getModule("user")->model("Role");
+                $role = Yii::$app->getModule('user')->model('Role');
                 $user->register($role::ROLE_USER, Yii::$app->request->userIP);
                 $profile->register($user->id);
                 $this->_calcEmailOrLogin($user);
@@ -130,13 +134,13 @@ class DefaultController extends Controller {
                 // set flash
                 // dont use $this->refresh() because user may automatically be logged in and get 403 forbidden
                 $userDisplayName = $user->getDisplayName();
-                $guestText = Yii::$app->user->isGuest ? " - Please check your email to confirm your account" : "";
-                Yii::$app->session->setFlash("Register-success", "Successfully registered [ $userDisplayName ]" . $guestText);
+                $guestText = Yii::$app->user->isGuest ? ' - Please check your email to confirm your account' : '';
+                Yii::$app->session->setFlash('Register-success', 'Successfully registered [ $userDisplayName ]' . $guestText);
             }
         }
 
         // render view
-        return $this->render("register", [
+        return $this->render('register', [
             'user' => $user,
             'profile' => $profile,
         ]);
@@ -147,17 +151,17 @@ class DefaultController extends Controller {
      *
      * @param \filsh\yii2\user\models\User $user
      */
-    protected function _calcEmailOrLogin($user) {
+    protected function _calcEmailOrLogin($user)
+    {
 
         // determine userkey type to see if we need to send email
         /** @var \filsh\yii2\user\models\User $user */
         /** @var \filsh\yii2\user\models\Userkey $userkey */
         $userkeyType = null;
-        $userkey = Yii::$app->getModule("user")->model("Userkey");
+        $userkey = Yii::$app->getModule('user')->model('Userkey');
         if ($user->status == $user::STATUS_INACTIVE) {
             $userkeyType = $userkey::TYPE_EMAIL_ACTIVATE;
-        }
-        elseif ($user->status == $user::STATUS_UNCONFIRMED_EMAIL) {
+        } elseif ($user->status == $user::STATUS_UNCONFIRMED_EMAIL) {
             $userkeyType = $userkey::TYPE_EMAIL_CHANGE;
         }
 
@@ -169,30 +173,31 @@ class DefaultController extends Controller {
             if (!$numSent = $user->sendEmailConfirmation($userkey)) {
 
                 // handle email error
-                //Yii::$app->session->setFlash("Email-error", "Failed to send email");
+                //Yii::$app->session->setFlash('Email-error', 'Failed to send email');
             }
         }
         // log user in automatically
         else {
-            Yii::$app->user->login($user, Yii::$app->getModule("user")->loginDuration);
+            Yii::$app->user->login($user, Yii::$app->getModule('user')->loginDuration);
         }
     }
 
     /**
      * Confirm email
      */
-    public function actionConfirm($key) {
+    public function actionConfirm($key)
+    {
 
         // search for userkey
         /** @var \filsh\yii2\user\models\Userkey $userkey */
         $success = false;
-        $userkey = Yii::$app->getModule("user")->model("Userkey");
+        $userkey = Yii::$app->getModule('user')->model('Userkey');
         $userkey = $userkey::findActiveByKey($key, [$userkey::TYPE_EMAIL_ACTIVATE, $userkey::TYPE_EMAIL_CHANGE]);
         if ($userkey) {
 
             // confirm user
             /** @var \filsh\yii2\user\models\User $user */
-            $user = Yii::$app->getModule("user")->model("User");
+            $user = Yii::$app->getModule('user')->model('User');
             $user = $user::findOne($userkey->user_id);
             $user->confirm();
 
@@ -202,21 +207,22 @@ class DefaultController extends Controller {
         }
 
         // render view
-        return $this->render("confirm", [
-            "userkey" => $userkey,
-            "success" => $success
+        return $this->render('confirm', [
+            'userkey' => $userkey,
+            'success' => $success
         ]);
     }
 
     /**
      * Account
      */
-    public function actionAccount() {
+    public function actionAccount()
+    {
 
         // set up user/profile and attempt to load data from $_POST
         /** @var \filsh\yii2\user\models\User $user */
         $user = Yii::$app->user->identity;
-        $user->setScenario("account");
+        $user->setScenario(User::SCENARIO_ACCOUNT);
         if ($user->load($_POST)) {
 
             // validate for ajax request
@@ -229,27 +235,27 @@ class DefaultController extends Controller {
             if ($user->validate()) {
 
                 // generate userkey and send email if user changed his email
-                if (Yii::$app->getModule("user")->emailChangeConfirmation and $user->checkAndPrepareEmailChange()) {
+                if (Yii::$app->getModule('user')->emailChangeConfirmation && $user->checkAndPrepareEmailChange()) {
 
                     /** @var \filsh\yii2\user\models\Userkey $userkey */
-                    $userkey = Yii::$app->getModule("user")->model("Userkey");
+                    $userkey = Yii::$app->getModule('user')->model('Userkey');
                     $userkey = $userkey::generate($user->id, $userkey::TYPE_EMAIL_CHANGE);
                     if (!$numSent = $user->sendEmailConfirmation($userkey)) {
 
                         // handle email error
-                        //Yii::$app->session->setFlash("Email-error", "Failed to send email");
+                        //Yii::$app->session->setFlash('Email-error', 'Failed to send email');
                     }
                 }
 
                 // save, set flash, and refresh page
                 $user->save(false);
-                Yii::$app->session->setFlash("Account-success", "Account updated");
+                Yii::$app->session->setFlash('Account-success', 'Account updated');
                 return $this->refresh();
             }
         }
 
         // render view
-        return $this->render("account", [
+        return $this->render('account', [
             'user' => $user,
         ]);
     }
@@ -257,7 +263,8 @@ class DefaultController extends Controller {
     /**
      * Profile
      */
-    public function actionProfile() {
+    public function actionProfile()
+    {
 
         // set up profile and attempt to load data from $_POST
         /** @var \filsh\yii2\user\models\Profile $profile */
@@ -272,13 +279,13 @@ class DefaultController extends Controller {
 
             // save
             if ($profile->save()) {
-                Yii::$app->session->setFlash("Profile-success", "Profile updated");
+                Yii::$app->session->setFlash('Profile-success', 'Profile updated');
                 return $this->refresh();
             }
         }
 
         // render view
-        return $this->render("profile", [
+        return $this->render('profile', [
             'profile' => $profile,
         ]);
     }
@@ -286,32 +293,34 @@ class DefaultController extends Controller {
     /**
      * Resend email confirmation
      */
-    public function actionResend() {
+    public function actionResend()
+    {
 
         // attempt to load $_POST data, validate, and send email
         /** @var \filsh\yii2\user\models\forms\ResendForm $model */
-        $model = Yii::$app->getModule("user")->model("ResendForm");
+        $model = Yii::$app->getModule('user')->model('ResendForm');
         if ($model->load($_POST) && $model->sendEmail()) {
 
             // set flash and refresh page
-            Yii::$app->session->setFlash("Resend-success", "Confirmation email resent");
+            Yii::$app->session->setFlash('Resend-success', 'Confirmation email resent');
             return $this->refresh();
         }
 
         // render view
-        return $this->render("resend", [
-            "model" => $model,
+        return $this->render('resend', [
+            'model' => $model,
         ]);
     }
 
     /**
      * Resend email change confirmation
      */
-    public function actionResendChange() {
+    public function actionResendChange()
+    {
 
         // attempt to find userkey and get user/profile to send confirmation email
         /** @var \filsh\yii2\user\models\Userkey $userkey */
-        $userkey = Yii::$app->getModule("user")->model("Userkey");
+        $userkey = Yii::$app->getModule('user')->model('Userkey');
         $userkey = $userkey::findActiveByUser(Yii::$app->user->id, $userkey::TYPE_EMAIL_CHANGE);
         if ($userkey) {
             /** @var \filsh\yii2\user\models\User $user */
@@ -319,21 +328,22 @@ class DefaultController extends Controller {
             $user->sendEmailConfirmation($userkey);
 
             // set flash message
-            Yii::$app->session->setFlash("Resend-success", "Confirmation email resent");
+            Yii::$app->session->setFlash('Resend-success', 'Confirmation email resent');
         }
 
         // go to account page
-        return $this->redirect(["/user/account"]);
+        return $this->redirect(['/user/account']);
     }
 
     /**
      * Cancel email change
      */
-    public function actionCancel() {
+    public function actionCancel()
+    {
 
         // attempt to find userkey
         /** @var \filsh\yii2\user\models\Userkey $userkey */
-        $userkey = Yii::$app->getModule("user")->model("Userkey");
+        $userkey = Yii::$app->getModule('user')->model('Userkey');
         $userkey = $userkey::findActiveByUser(Yii::$app->user->id, $userkey::TYPE_EMAIL_CHANGE);
         if ($userkey) {
 
@@ -345,56 +355,58 @@ class DefaultController extends Controller {
 
             // delete userkey and set flash message
             $userkey->expire();
-            Yii::$app->session->setFlash("Cancel-success", "Email change cancelled");
+            Yii::$app->session->setFlash('Cancel-success', 'Email change cancelled');
         }
 
         // go to account page
-        return $this->redirect(["/user/account"]);
+        return $this->redirect(['/user/account']);
     }
 
     /**
      * Forgot password
      */
-    public function actionForgot() {
+    public function actionForgot()
+    {
 
         // attempt to load $_POST data, validate, and send email
         /** @var \filsh\yii2\user\models\forms\ForgotForm $model */
-        $model = Yii::$app->getModule("user")->model("ForgotForm");
+        $model = Yii::$app->getModule('user')->model('ForgotForm');
         if ($model->load($_POST) && $model->sendForgotEmail()) {
 
             // set flash and refresh page
-            Yii::$app->session->setFlash("Forgot-success", "Instructions to reset your password have been sent");
+            Yii::$app->session->setFlash('Forgot-success', 'Instructions to reset your password have been sent');
             //return $this->refresh();
         }
 
         // render view
-        return $this->render("forgot", [
-            "model" => $model,
+        return $this->render('forgot', [
+            'model' => $model,
         ]);
     }
 
     /**
      * Reset password
      */
-    public function actionReset($key) {
+    public function actionReset($key)
+    {
 
         // check for invalid userkey
         /** @var \filsh\yii2\user\models\Userkey $userkey */
-        $userkey = Yii::$app->getModule("user")->model("Userkey");
+        $userkey = Yii::$app->getModule('user')->model('Userkey');
         $userkey = $userkey::findActiveByKey($key, $userkey::TYPE_PASSWORD_RESET);
         if (!$userkey) {
-            return $this->render('reset', ["invalidKey" => true]);
+            return $this->render('reset', ['invalidKey' => true]);
         }
 
         // attempt to load $_POST data, validate, and reset user password
         /** @var \filsh\yii2\user\models\forms\ResetForm $model */
         $success = false;
-        $model = Yii::$app->getModule("user")->model("ResetForm", ["userkey" => $userkey]);
+        $model = Yii::$app->getModule('user')->model('ResetForm', ['userkey' => $userkey]);
         if ($model->load($_POST) && $model->resetPassword()) {
             $success = true;
         }
 
         // render view
-        return $this->render('reset', compact("model", "success"));
+        return $this->render('reset', compact('model', 'success'));
     }
 }

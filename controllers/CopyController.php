@@ -9,28 +9,28 @@ use yii\console\Controller;
 /**
  * Copies user module to your app/modules folder
  */
-class CopyController extends Controller {
-
+class CopyController extends Controller
+{
     /**
      * @var string From path
      */
-    public $from = "@vendor/filsh/yii2-user";
+    public $from = '@vendor/filsh/yii2-user';
 
     /**
      * @var string To path
      */
-    public $to = "@app/modules/user";
+    public $to = '@app/modules/user';
 
     /**
      * @var string New namespace of module
      */
-    public $namespace = "app\\modules\\user";
+    public $namespace = 'app\\modules\\user';
 
     /**
      * @inheritdoc
      */
-    public function init() {
-
+    public function init()
+    {
         // check if this is being run via console only
         if (!\Yii::$app->request->isConsoleRequest) {
             throw new HttpException(404, 'The requested page does not exist.');
@@ -42,17 +42,18 @@ class CopyController extends Controller {
     /**
      * @inheritdoc
      */
-    public function options($actionId) {
+    public function options($actionId)
+    {
         return ['from', 'to', 'namespace'];
     }
 
     /**
      * Index
      */
-    public function actionIndex() {
-
+    public function actionIndex()
+    {
         // define confirm message
-        $confirmMsg  = "\r\n";
+        $confirmMsg = "\r\n";
         $confirmMsg .= "Please confirm:\r\n";
         $confirmMsg .= "\r\n";
         $confirmMsg .= "    From        [ $this->from ]\r\n";
@@ -63,12 +64,12 @@ class CopyController extends Controller {
 
         // confirm copy
         $confirm = $this->prompt($confirmMsg, [
-            "required" => true,
-            "default" => "no",
+            'required' => true,
+            'default' => 'no',
         ]);
 
         // process copy
-        if (strncasecmp($confirm, "y", 1) === 0) {
+        if (strncasecmp($confirm, 'y', 1) === 0) {
             // handle aliases and copy files
             $fromPath = Yii::getAlias($this->from);
             $toPath = Yii::getAlias($this->to);
@@ -93,14 +94,14 @@ class CopyController extends Controller {
      * @param string $toPath
      * @param string $namespace
      */
-    protected function copyFiles($fromPath, $toPath, $namespace) {
-
+    protected function copyFiles($fromPath, $toPath, $namespace)
+    {
         // trim paths
-        $fromPath = rtrim($fromPath, "/\\");
-        $toPath = rtrim($toPath, "/\\");
+        $fromPath = rtrim($fromPath, '/\\');
+        $toPath = rtrim($toPath, '/\\');
 
         // get files recursively
-        $filePaths = $this->glob_recursive($fromPath . "/*");
+        $filePaths = $this->glob_recursive($fromPath . '/*');
 
         // generate new files
         $results = [];
@@ -117,15 +118,14 @@ class CopyController extends Controller {
 
             // get file content and replace namespace
             $content = file_get_contents($file);
-            $content = str_replace("filsh\\yii2\\user", $namespace, $content);
+            $content = str_replace('filsh\\yii2\\user', $namespace, $content);
 
             // save and store result
             if (file_exists($newFilePath)) {
-                $results[$relativeFile] = "File already exists ... skipping";
-            }
-            else {
+                $results[$relativeFile] = 'File already exists ... skipping';
+            } else {
                 $result = $this->save($newFilePath, $content);
-                $results[$relativeFile] = ($result === true ? "success" : $result);
+                $results[$relativeFile] = ($result === true ? 'success' : $result);
             }
         }
 
@@ -141,7 +141,8 @@ class CopyController extends Controller {
      * @param int $flags
      * @return array
      */
-    protected function glob_recursive($pattern, $flags = 0) {
+    protected function glob_recursive($pattern, $flags = 0)
+    {
         $files = glob($pattern, $flags);
 
         foreach (glob(dirname($pattern) . '/*', GLOB_ONLYDIR | GLOB_NOSORT) as $dir) {
@@ -159,8 +160,8 @@ class CopyController extends Controller {
      * @param string $content
      * @return string|boolean the error occurred while saving the code file, or true if no error.
      */
-    protected function save($path, $content) {
-
+    protected function save($path, $content)
+    {
         $newDirMode = 0755;
         $newFileMode = 0644;
 
@@ -170,13 +171,12 @@ class CopyController extends Controller {
             $result = @mkdir($dir, $newDirMode, true);
             @umask($mask);
             if (!$result) {
-                return "Unable to create the directory '$dir'.";
+                return 'Unable to create the directory ' . $dir . '.';
             }
         }
         if (@file_put_contents($path, $content) === false) {
-            return "Unable to write the file '{$path}'.";
-        }
-        else {
+            return 'Unable to write the file ' . $path . '.';
+        } else {
             $mask = @umask(0);
             @chmod($path, $newFileMode);
             @umask($mask);

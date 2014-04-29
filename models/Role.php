@@ -16,11 +16,12 @@ use yii\db\ActiveRecord;
  *
  * @property User[] $users
  */
-class Role extends ActiveRecord {
-
+class Role extends ActiveRecord
+{
     /**
      * @var int Admin user role
      */
+
     const ROLE_ADMIN = 1;
 
     /**
@@ -36,14 +37,16 @@ class Role extends ActiveRecord {
     /**
      * @inheritdoc
      */
-    public static function tableName() {
-        return static::getDb()->tablePrefix . "role";
+    public static function tableName()
+    {
+        return static::getDb()->tablePrefix . 'role';
     }
 
     /**
      * @inheritdoc
      */
-    public function rules() {
+    public function rules()
+    {
         return [
             [['name'], 'required'],
             [['create_time', 'update_time'], 'safe'],
@@ -55,7 +58,8 @@ class Role extends ActiveRecord {
     /**
      * @inheritdoc
      */
-    public function attributeLabels() {
+    public function attributeLabels()
+    {
         return [
             'id' => 'ID',
             'name' => 'Name',
@@ -68,15 +72,17 @@ class Role extends ActiveRecord {
     /**
      * @return \yii\db\ActiveRelation
      */
-    public function getUsers() {
-        $user = Yii::$app->getModule("user")->model("User");
+    public function getUsers()
+    {
+        $user = Yii::$app->getModule('user')->model('User');
         return $this->hasMany($user::className(), ['role_id' => 'id']);
     }
 
     /**
      * @inheritdoc
      */
-    public function behaviors() {
+    public function behaviors()
+    {
         return [
             'timestamp' => [
                 'class' => 'yii\behaviors\TimestampBehavior',
@@ -84,7 +90,9 @@ class Role extends ActiveRecord {
                     ActiveRecord::EVENT_BEFORE_INSERT => 'create_time',
                     ActiveRecord::EVENT_BEFORE_UPDATE => 'update_time',
                 ],
-                'value' => function() { return date("Y-m-d H:i:s"); },
+                'value' => function() {
+                    return date('Y-m-d H:i:s');
+                },
             ],
         ];
     }
@@ -95,8 +103,9 @@ class Role extends ActiveRecord {
      * @param string $permission
      * @return bool
      */
-    public function checkPermission($permission) {
-        $roleAttribute = "can_{$permission}";
+    public function checkPermission($permission)
+    {
+        $roleAttribute = 'can_{$permission}';
         return $this->$roleAttribute ? true : false;
     }
 
@@ -105,8 +114,8 @@ class Role extends ActiveRecord {
      *
      * @return array
      */
-    public static function dropdown() {
-
+    public static function dropdown()
+    {
         // get data if needed
         static $dropdown;
         if ($dropdown === null) {

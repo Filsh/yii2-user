@@ -6,27 +6,28 @@ use Yii;
 use yii\web\Controller;
 use yii\web\HttpException;
 use yii\filters\VerbFilter;
+use filsh\yii2\user\models\User;
 
 /**
  * AdminController implements the CRUD actions for User model.
  */
-class AdminController extends Controller {
-
+class AdminController extends Controller
+{
     /**
      * Get view path based on module property
      *
      * @return string
      */
-    public function getViewPath() {
-        return Yii::$app->getModule("user")->viewPath
-            ? rtrim(Yii::$app->getModule("user")->viewPath, "/\\") . DIRECTORY_SEPARATOR . $this->id
-            :parent::getViewPath();
+    public function getViewPath()
+    {
+        return Yii::$app->getModule('user')->viewPath ? rtrim(Yii::$app->getModule('user')->viewPath, '/\\') . DIRECTORY_SEPARATOR . $this->id : parent::getViewPath();
     }
 
     /**
      * @inheritdoc
      */
-    public function behaviors() {
+    public function behaviors()
+    {
         return [
             'verbs' => [
                 'class' => VerbFilter::className(),
@@ -40,10 +41,10 @@ class AdminController extends Controller {
     /**
      * @inheritdoc
      */
-    public function init() {
-
+    public function init()
+    {
         // check for admin permission in web requests. console requests should not throw the exception
-        if (!Yii::$app->request->isConsoleRequest && !Yii::$app->user->can("admin")) {
+        if (!Yii::$app->request->isConsoleRequest && !Yii::$app->user->can('admin')) {
             throw new HttpException(403, 'You are not allowed to perform this action.');
         }
 
@@ -55,15 +56,15 @@ class AdminController extends Controller {
      *
      * @return mixed
      */
-    public function actionIndex() {
-
+    public function actionIndex()
+    {
         /** @var \filsh\yii2\user\models\search\UserSearch $searchModel */
-        $searchModel = Yii::$app->getModule("user")->model("UserSearch");
+        $searchModel = Yii::$app->getModule('user')->model('UserSearch');
         $dataProvider = $searchModel->search($_GET);
 
         return $this->render('index', [
-            'dataProvider' => $dataProvider,
-            'searchModel' => $searchModel,
+                    'dataProvider' => $dataProvider,
+                    'searchModel' => $searchModel,
         ]);
     }
 
@@ -73,9 +74,10 @@ class AdminController extends Controller {
      * @param string $id
      * @return mixed
      */
-    public function actionView($id) {
+    public function actionView($id)
+    {
         return $this->render('view', [
-            'model' => $this->findModel($id),
+                    'model' => $this->findModel($id),
         ]);
     }
 
@@ -85,23 +87,22 @@ class AdminController extends Controller {
      *
      * @return mixed
      */
-    public function actionCreate() {
-
+    public function actionCreate()
+    {
         /** @var \filsh\yii2\user\models\User $user */
         /** @var \filsh\yii2\user\models\Profile $profile */
-        $user = Yii::$app->getModule("user")->model("User");
-        $user->setScenario("admin");
-        $profile = Yii::$app->getModule("user")->model("Profile");
+        $user = Yii::$app->getModule('user')->model('User');
+        $user->setScenario(User::SCENARIO_ADMIN);
+        $profile = Yii::$app->getModule('user')->model('Profile');
 
         if ($user->load($_POST) && $user->validate() && $profile->load($_POST) and $profile->validate()) {
             $user->save();
             $profile->setUser($user->id)->save(false);
             return $this->redirect(['view', 'id' => $user->id]);
-        }
-        else {
+        } else {
             return $this->render('create', [
-                'user' => $user,
-                'profile' => $profile,
+                        'user' => $user,
+                        'profile' => $profile,
             ]);
         }
     }
@@ -113,20 +114,20 @@ class AdminController extends Controller {
      * @param string $id
      * @return mixed
      */
-    public function actionUpdate($id) {
+    public function actionUpdate($id)
+    {
         $user = $this->findModel($id);
-        $user->setScenario("admin");
+        $user->setScenario(User::SCENARIO_ADMIN);
         $profile = $user->profile;
 
         if ($user->load($_POST) && $user->validate() && $profile->load($_POST) and $profile->validate()) {
             $user->save();
             $profile->save();
             return $this->redirect(['view', 'id' => $user->id]);
-        }
-        else {
+        } else {
             return $this->render('update', [
-                'user' => $user,
-                'profile' => $profile,
+                        'user' => $user,
+                        'profile' => $profile,
             ]);
         }
     }
@@ -138,8 +139,8 @@ class AdminController extends Controller {
      * @param string $id
      * @return mixed
      */
-    public function actionDelete($id) {
-
+    public function actionDelete($id)
+    {
         // delete profile first to handle foreign key constraint
         $user = $this->findModel($id);
         $profile = $user->profile;
@@ -157,12 +158,12 @@ class AdminController extends Controller {
      * @return \filsh\yii2\user\models\User the loaded model
      * @throws HttpException if the model cannot be found
      */
-    protected function findModel($id) {
-        $user = Yii::$app->getModule("user")->model("User");
+    protected function findModel($id)
+    {
+        $user = Yii::$app->getModule('user')->model('User');
         if (($model = $user::findOne($id)) !== null) {
             return $model;
-        }
-        else {
+        } else {
             throw new HttpException(404, 'The requested page does not exist.');
         }
     }

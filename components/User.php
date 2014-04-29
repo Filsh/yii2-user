@@ -7,8 +7,8 @@ use Yii;
 /**
  * User component
  */
-class User extends \yii\web\User {
-
+class User extends \yii\web\User
+{
     /**
      * @inheritdoc
      */
@@ -22,21 +22,23 @@ class User extends \yii\web\User {
     /**
      * @inheritdoc
      */
-    public $loginUrl = ["/user/login"];
+    public $loginUrl = ['/user/login'];
 
     /**
      * Check if user is logged in
      *
      * @return bool
      */
-    public function getIsLoggedIn() {
+    public function getIsLoggedIn()
+    {
         return !$this->getIsGuest();
     }
 
     /**
      * @inheritdoc
      */
-    public function afterLogin($identity, $cookieBased, $duration) {
+    public function afterLogin($identity, $cookieBased, $duration)
+    {
         $identity->setLoginIpAndTime();
         return parent::afterLogin($identity, $cookieBased, $duration);
     }
@@ -47,11 +49,11 @@ class User extends \yii\web\User {
      * @param string $default
      * @return string
      */
-    public function getDisplayName($default = "") {
-
+    public function getDisplayName($default = '')
+    {
         // check for current user
         $user = $this->getIdentity();
-        return $user ? $user->getDisplayName($default) : "";
+        return $user ? $user->getDisplayName($default) : '';
     }
 
     /**
@@ -62,8 +64,8 @@ class User extends \yii\web\User {
      * @param bool   $allowCaching
      * @return bool
      */
-    public function can($permissionName, $params = [], $allowCaching = true) {
-
+    public function can($permissionName, $params = [], $allowCaching = true)
+    {
         // check if we have an authmanager. if so, call the parent functionality
         $auth = Yii::$app->getAuthManager();
         if ($auth) {
