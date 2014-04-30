@@ -54,11 +54,11 @@ class User extends ActiveRecord implements IdentityInterface
      * @var int Unconfirmed email status
      */
     const STATUS_UNCONFIRMED_EMAIL = 2;
-
+    
     /**
      * @var string New password - for registration and changing password
      */
-    public $newPassword;
+    public $password;
 
     /**
      * @var string Current password - for account page updates
@@ -106,9 +106,9 @@ class User extends ActiveRecord implements IdentityInterface
             [['email'], 'email'],
             [['username'], 'match', 'pattern' => '/^[A-Za-z0-9_]+$/u', 'message' => '{attribute} can contain only letters, numbers, and \'_\'.'],
             // password rules
-            [['newPassword'], 'string', 'min' => 3],
-            [['newPassword'], 'filter', 'filter' => 'trim'],
-            [['newPassword'], 'required', 'on' => [self::SCENARIO_REGISTER]],
+            [['password'], 'string', 'min' => 3],
+            [['password'], 'filter', 'filter' => 'trim'],
+            [['password'], 'required', 'on' => [self::SCENARIO_REGISTER]],
             // account page
             [['currentPassword'], 'required', 'on' => [self::SCENARIO_ACCOUNT]],
             [['currentPassword'], 'validateCurrentPassword', 'on' => [self::SCENARIO_ACCOUNT]],
@@ -159,9 +159,7 @@ class User extends ActiveRecord implements IdentityInterface
             'ban_time' => 'Ban Time',
             'ban_reason' => 'Ban Reason',
             'create_time' => 'Create Time',
-            'update_time' => 'Update Time',
-            // attributes in model
-            'newPassword' => ($this->isNewRecord) ? 'Password' : 'New Password',
+            'update_time' => 'Update Time'
         ];
     }
 
@@ -284,10 +282,42 @@ class User extends ActiveRecord implements IdentityInterface
         $profile = $user->profile;
         $email = $user->new_email !== null ? $user->new_email : $user->email;
         $subject = Yii::$app->id . ' - Email confirmation';
-        return $mailer->compose('confirmEmail', compact('subject', 'user', 'profile', 'userkey'))
-                        ->setTo($email)
-                        ->setSubject($subject)
-                        ->send();
+        
+        $numSent = $mailer->compose('confirmEmail', compact('subject', 'user', 'profile', 'userkey'))
+            ->setTo($email)
+            ->setSubject($subject)
+            ->send();
+        
+        if($numSent === false) {
+            Yii::error(sprintf('Failed to send email \'%s\' with subject \'%s\'', $email, $subject), __CLASS__);
+        }
+    }
+    
+    /**
+     * Calculate whether we need to send confirmation email or log user in based on user's status
+     */
+    public function sendEmailOrLogin()
+    {
+        // determine userkey type to see if we need to send email
+        /** @var \filsh\yii2\user\models\User $user */
+        /** @var \filsh\yii2\user\models\Userkey $userkey */
+        $userkeyType = null;
+        $userkey = Yii::$app->getModule('user')->model('Userkey');
+        if ($this->status == $this::STATUS_INACTIVE) {
+            $userkeyType = $userkey::TYPE_EMAIL_ACTIVATE;
+        } elseif ($this->status == $this::STATUS_UNCONFIRMED_EMAIL) {
+            $userkeyType = $userkey::TYPE_EMAIL_CHANGE;
+        }
+
+        // check if we have a userkey type to process
+        if ($userkeyType !== null) {
+            $userkey = $userkey::generate($this->id, $userkeyType);
+            $this->sendEmailConfirmation($userkey);
+        }
+        // log user in automatically
+        else {
+            Yii::$app->user->login($this, Yii::$app->getModule('user')->loginDuration);
+        }
     }
 
     /**
@@ -295,9 +325,13 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function beforeSave($insert)
     {
+        if(parent::beforeSave($insert) === false) {
+            return false;
+        }
+        
         // hash new password if set
-        if ($this->newPassword) {
-            $this->encryptNewPassword();
+        if ($this->password) {
+            $this->encryptPassword();
         }
 
         // generate auth_key and api_key if needed
@@ -319,18 +353,18 @@ class User extends ActiveRecord implements IdentityInterface
         foreach ($nullAttributes as $nullAttribute) {
             $this->$nullAttribute = $this->$nullAttribute ? $this->$nullAttribute : null;
         }
-
-        return parent::beforeSave($insert);
+        
+        return true;
     }
 
     /**
-     * Encrypt newPassword into password
+     * Encrypt password into password
      *
      * @return static
      */
-    public function encryptNewPassword()
+    public function encryptPassword()
     {
-        $this->password = Security::generatePasswordHash($this->newPassword);
+        $this->password = Security::generatePasswordHash($this->password);
         return $this;
     }
 
@@ -352,8 +386,12 @@ class User extends ActiveRecord implements IdentityInterface
      * @param string $userIp
      * @return static
      */
-    public function register($roleId, $userIp)
+    public function register($roleId, $userIp = null)
     {
+        if($userIp === null) {
+            $userIp = Yii::$app->request->userIP;
+        }
+        
         // set default attributes for registration
         $attributes = [
             'role_id' => $roleId,
@@ -364,11 +402,15 @@ class User extends ActiveRecord implements IdentityInterface
         $emailConfirmation = Yii::$app->getModule('user')->emailConfirmation;
 
         // set status inactive if email is required
-        if ($emailConfirmation and Yii::$app->getModule('user')->requireEmail) {
+        if ($emailConfirmation && Yii::$app->getModule('user')->requireEmail) {
             $attributes['status'] = static::STATUS_INACTIVE;
         }
+        // set unconfirmed if email is set required
+        else if(Yii::$app->getModule('user')->requireEmail) {
+            $attributes['status'] = static::STATUS_UNCONFIRMED_EMAIL;
+        }
         // set unconfirmed if email is set but NOT required
-        elseif ($emailConfirmation and Yii::$app->getModule('user')->useEmail and $this->email) {
+        elseif ($emailConfirmation && Yii::$app->getModule('user')->useEmail && $this->email) {
             $attributes['status'] = static::STATUS_UNCONFIRMED_EMAIL;
         }
         // set active otherwise

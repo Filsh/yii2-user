@@ -32,9 +32,8 @@ class Profile extends ActiveRecord
     public function rules()
     {
         return [
-//            [['user_id'], 'required'],
-//            [['user_id'], 'integer'],
-//            [['create_time', 'update_time'], 'safe'],
+            [['user_id'], 'required', 'except' => [User::SCENARIO_REGISTER]],
+            [['user_id'], 'integer'],
             [['full_name'], 'string', 'max' => 255]
         ];
     }
@@ -47,9 +46,9 @@ class Profile extends ActiveRecord
         return [
             'id' => 'ID',
             'user_id' => 'User ID',
+            'full_name' => 'Full Name',
             'create_time' => 'Create Time',
             'update_time' => 'Update Time',
-            'full_name' => 'Full Name',
         ];
     }
 

@@ -24,12 +24,12 @@ class ResetForm extends Model
     /**
      * @var string
      */
-    public $newPassword;
+    public $password;
 
     /**
      * @var string
      */
-    public $newPasswordConfirm;
+    public $passwordConfirm;
 
     /**
      * @var \filsh\yii2\user\models\User
@@ -50,21 +50,21 @@ class ResetForm extends Model
               [['email'], 'validateUserkeyEmail'],
               [['email'], 'filter', 'filter' => 'trim'],
              */
-            [['newPassword', 'newPasswordConfirm'], 'required'],
-            [['newPasswordConfirm'], 'compare', 'compareAttribute' => 'newPassword', 'message' => 'Passwords do not match']
+            [['password', 'passwordConfirm'], 'required'],
+            [['passwordConfirm'], 'compare', 'compareAttribute' => 'password', 'message' => 'Passwords do not match']
         ];
 
         // add and return user rules
-        return $this->_copyNewPasswordRules($rules);
+        return $this->copyPasswordRules($rules);
     }
 
     /**
-     * Copy newPassword rules (min length, max length, etc) from user class
+     * Copy password rules (min length, max length, etc) from user class
      *
      * @param $rules
      * @return array
      */
-    protected function _copyNewPasswordRules($rules)
+    protected function copyPasswordRules($rules)
     {
         // go through user rules
         $user = Yii::$app->getModule('user')->model('User');
@@ -80,11 +80,11 @@ class ResetForm extends Model
                 $attribute = [$attribute];
             }
 
-            // check for newPassword attribute and that it's not required
-            if (in_array('newPassword', $attribute) and $validator != 'required') {
+            // check for password attribute and that it's not required
+            if (in_array('password', $attribute) and $validator != 'required') {
 
                 // overwrite the attribute
-                $rule[0] = ['newPassword'];
+                $rule[0] = ['password'];
 
                 // add to rules
                 $rules[] = $rule;
@@ -114,8 +114,8 @@ class ResetForm extends Model
     public function attributeLabels()
     {
         return [
-            'newPassword' => 'New Password',
-            'newPasswordConfirm' => 'Confirm New Password',
+            'password' => 'Password',
+            'passwordConfirm' => 'Confirm Password',
         ];
     }
 
@@ -145,7 +145,7 @@ class ResetForm extends Model
 
             // update password
             $user = $this->getUser();
-            $user->newPassword = $this->newPassword;
+            $user->password = $this->password;
             $user->save(false);
 
             // consume userkey

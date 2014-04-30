@@ -127,7 +127,7 @@ class DefaultController extends Controller
                 $role = Yii::$app->getModule('user')->model('Role');
                 $user->register($role::ROLE_USER, Yii::$app->request->userIP);
                 $profile->register($user->id);
-                $this->sendEmailOrLogin($user);
+                $user->sendEmailOrLogin();
 
                 // set flash
                 // dont use $this->refresh() because user may automatically be logged in and get 403 forbidden
@@ -142,41 +142,6 @@ class DefaultController extends Controller
             'user' => $user,
             'profile' => $profile,
         ]);
-    }
-
-    /**
-     * Calculate whether we need to send confirmation email or log user in based on user's status
-     *
-     * @param \filsh\yii2\user\models\User $user
-     */
-    protected function sendEmailOrLogin($user)
-    {
-        // determine userkey type to see if we need to send email
-        /** @var \filsh\yii2\user\models\User $user */
-        /** @var \filsh\yii2\user\models\Userkey $userkey */
-        $userkeyType = null;
-        $userkey = Yii::$app->getModule('user')->model('Userkey');
-        if ($user->status == $user::STATUS_INACTIVE) {
-            $userkeyType = $userkey::TYPE_EMAIL_ACTIVATE;
-        } elseif ($user->status == $user::STATUS_UNCONFIRMED_EMAIL) {
-            $userkeyType = $userkey::TYPE_EMAIL_CHANGE;
-        }
-
-        // check if we have a userkey type to process
-        if ($userkeyType !== null) {
-
-            // generate userkey and send email
-            $userkey = $userkey::generate($user->id, $userkeyType);
-            if (!$numSent = $user->sendEmailConfirmation($userkey)) {
-
-                // handle email error
-                //Yii::$app->session->setFlash('Email-error', 'Failed to send email');
-            }
-        }
-        // log user in automatically
-        else {
-            Yii::$app->user->login($user, Yii::$app->getModule('user')->loginDuration);
-        }
     }
 
     /**

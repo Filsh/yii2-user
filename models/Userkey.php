@@ -24,18 +24,17 @@ class Userkey extends ActiveRecord
     /**
      * @var int Key for email activations (=registering)
      */
-
-    const TYPE_EMAIL_ACTIVATE = 1;
+    const TYPE_EMAIL_ACTIVATE = 2;
 
     /**
      * @var int Key for email changes (=updating account page)
      */
-    const TYPE_EMAIL_CHANGE = 2;
+    const TYPE_EMAIL_CHANGE = 3;
 
     /**
      * @var int Key for password resets
      */
-    const TYPE_PASSWORD_RESET = 3;
+    const TYPE_PASSWORD_RESET = 4;
 
     /**
      * @inheritdoc
@@ -51,10 +50,10 @@ class Userkey extends ActiveRecord
     public function rules()
     {
         return [
-//            [['user_id', 'type', 'key'], 'required'],
-//            [['user_id', 'type'], 'integer'],
-//            [['create_time', 'consume_time', 'expire_time'], 'safe'],
-//            [['key'], 'string', 'max' => 255]
+            [['user_id', 'type', 'key'], 'required'],
+            [['user_id', 'type'], 'integer'],
+            [['key'], 'string', 'max' => 255],
+            [['create_time', 'consume_time', 'expire_time'], 'safe']
         ];
     }
 
@@ -122,9 +121,9 @@ class Userkey extends ActiveRecord
         // set/update data
         $model->user_id = $userId;
         $model->type = $type;
+        $model->key = Security::generateRandomKey();
         $model->create_time = date('Y-m-d H:i:s');
         $model->expire_time = $expireTime;
-        $model->key = Security::generateRandomKey();
         $model->save(false);
 
         return $model;

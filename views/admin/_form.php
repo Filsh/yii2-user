@@ -23,7 +23,7 @@ $role = \Yii::$app->getModule("user")->model("Role");
 
         <?= $form->field($profile, 'full_name'); ?>
 
-        <?= $form->field($user, 'newPassword'); ?>
+        <?= $form->field($user, 'password'); ?>
 
 		<?= $form->field($user, 'role_id')->dropDownList($role::dropdown()); ?>
 

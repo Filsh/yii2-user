@@ -9,18 +9,21 @@ class m131114_141544_add_user extends \yii\db\Migration
 {
     public function up()
     {
-        // start transaction in case we need to rollback
-        // note that this doesn't rollback table creations in mysql
+        $tableOptions = null;
+        if ($this->db->driverName === 'mysql') {
+            $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=InnoDB';
+        }
+
         $transaction = $this->db->beginTransaction();
         try {
-            // create tables in specific order
             $this->createTable(Role::tableName(), [
                 'id' => 'int UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY',
                 'name' => 'varchar(255) NOT NULL',
                 'create_time' => 'timestamp NULL DEFAULT NULL',
                 'update_time' => 'timestamp NULL DEFAULT NULL',
                 'can_admin' => 'tinyint DEFAULT 0',
-            ]);
+            ], $tableOptions);
+            
             $this->createTable(User::tableName(), [
                 'id' => 'int UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY',
                 'role_id' => 'int UNSIGNED NOT NULL',
@@ -38,7 +41,11 @@ class m131114_141544_add_user extends \yii\db\Migration
                 'registration_ip' => 'varchar(45) NULL DEFAULT NULL',
                 'login_ip' => 'varchar(45) NULL DEFAULT NULL',
                 'login_time' => 'timestamp NULL DEFAULT NULL',
-            ]);
+                'UNIQUE KEY(`email`)',
+                'UNIQUE KEY(`username`)',
+                'FOREIGN KEY (`role_id`) REFERENCES ' . Role::tableName() . ' (`id`) ON DELETE CASCADE ON UPDATE CASCADE'
+            ], $tableOptions);
+            
             $this->createTable(Userkey::tableName(), [
                 'id' => 'int UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY',
                 'user_id' => 'int UNSIGNED NOT NULL',
@@ -47,48 +54,38 @@ class m131114_141544_add_user extends \yii\db\Migration
                 'create_time' => 'timestamp NULL DEFAULT NULL',
                 'consume_time' => 'timestamp NULL DEFAULT NULL',
                 'expire_time' => 'timestamp NULL DEFAULT NULL',
-            ]);
+                'UNIQUE KEY(`key`)',
+                'FOREIGN KEY (`user_id`) REFERENCES ' . User::tableName() . ' (`id`) ON DELETE CASCADE ON UPDATE CASCADE'
+            ], $tableOptions);
+            
             $this->createTable(Profile::tableName(), [
                 'id' => 'int UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY',
                 'user_id' => 'int UNSIGNED NOT NULL',
                 'create_time' => 'timestamp NULL DEFAULT NULL',
                 'update_time' => 'timestamp NULL DEFAULT NULL',
                 'full_name' => 'varchar(255) NULL DEFAULT NULL',
-            ]);
-
-            // add indices for performance optimization
-            $this->createIndex(Userkey::tableName() . '_key', Userkey::tableName(), 'key', true);
-            $this->createIndex(User::tableName() . '_email', User::tableName(), 'email', true);
-            $this->createIndex(User::tableName() . '_username', User::tableName(), 'username', true);
-
-            // add foreign keys for data integrity
-            $this->addForeignKey(User::tableName() . '_role_id', User::tableName(), 'role_id', Role::tableName(), 'id');
-            $this->addForeignKey(Profile::tableName() . '_user_id', Profile::tableName(), 'user_id', User::tableName(), 'id');
-            $this->addForeignKey(Userkey::tableName() . '_user_id', Userkey::tableName(), 'user_id', User::tableName(), 'id');
-
+                'FOREIGN KEY (`user_id`) REFERENCES ' . User::tableName() . ' (`id`) ON DELETE CASCADE ON UPDATE CASCADE'
+            ], $tableOptions);
+            
             // insert role data
             // note: i create a guest role because i like to give guest users the ability to use the site
             //       without registering. you can delete it if you want
-            $columns = ['name', 'can_admin', 'create_time'];
-            $this->batchInsert(Role::tableName(), $columns, [
+            $this->batchInsert(Role::tableName(), ['name', 'can_admin', 'create_time'], [
                 ['Admin', 1, date('Y-m-d H:i:s')],
                 ['User', 0, date('Y-m-d H:i:s')],
                 ['Guest', 0, date('Y-m-d H:i:s')],
             ]);
 
             // insert user data
-            $columns = ['id', 'role_id', 'email', 'username', 'password', 'status', 'create_time'];
-            $this->batchInsert(User::tableName(), $columns, [
+            $this->batchInsert(User::tableName(), ['id', 'role_id', 'email', 'username', 'password', 'status', 'create_time'], [
                 [1, Role::ROLE_ADMIN, 'neo@neo.com', 'neo', '$2y$10$WYB666j7MmxuW6b.kFTOde/eGCLijWa6BFSjAAiiRbSAqpC1HCmrC', User::STATUS_ACTIVE, date('Y-m-d H:i:s')],
             ]);
 
             // insert profile data
-            $columns = ['id', 'user_id', 'full_name', 'create_time'];
-            $this->batchInsert(Profile::tableName(), $columns, [
+            $this->batchInsert(Profile::tableName(), ['id', 'user_id', 'full_name', 'create_time'], [
                 [1, 1, 'the one', date('Y-m-d H:i:s')],
             ]);
-
-            // commit transaction
+            
             $transaction->commit();
         } catch (Exception $e) {
             echo 'Exception: ' . $e->getMessage() . '\n';
@@ -104,11 +101,11 @@ class m131114_141544_add_user extends \yii\db\Migration
     {
         $transaction = $this->db->beginTransaction();
         try {
-            // drop tables in specific order - be careful with foreign key constraints
             $this->dropTable(Profile::tableName());
             $this->dropTable(Userkey::tableName());
             $this->dropTable(User::tableName());
             $this->dropTable(Role::tableName());
+            
             $transaction->commit();
         } catch (Exception $e) {
             $transaction->rollback();

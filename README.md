@@ -25,7 +25,7 @@ Yii 2 User - User authentication module
 ## Installation
 
 * Install [Yii 2](http://www.yiiframework.com/download) using your preferred method
-* Install package via [composer](http://getcomposer.org/download/) ```"amnah/yii2-user": "dev-master"```
+* Install package via [composer](http://getcomposer.org/download/) ```"filsh/yii2-user": "dev-master"```
 * Update config file *config/web.php* and *config/db.php*
 
 ```php
@@ -33,7 +33,7 @@ Yii 2 User - User authentication module
 return [
     'components' => [
         'user' => [
-            'class' => 'amnah\yii2\user\components\User',
+            'class' => 'filsh\yii2\user\components\User',
         ],
         'mail' => [
             // set up mail for emails
@@ -41,7 +41,7 @@ return [
     ],
     'modules' => [
         'user' => [
-            'class' => 'amnah\yii2\user\Module',
+            'class' => 'filsh\yii2\user\Module',
             // set custom module properties here ...
         ],
     ],
@@ -54,7 +54,7 @@ return [
 ```
 
 * Run migration file
-    * ```php yii migrate --migrationPath=@vendor/amnah/yii2-user/migrations```
+    * ```php yii migrate --migrationPath=@vendor/filsh/yii2-user/migrations```
 * Go to your application in your browser
     * ```http://localhost/pathtoapp/web/user```
 * Log in as admin using ```neo/neo``` (change it!)
@@ -145,7 +145,7 @@ I've created a helper command to copy the files for you.
 // app/config/console.php
 'modules' => [
     'user' => [
-        'class' => 'amnah\yii2\user\Module',
+        'class' => 'filsh\yii2\user\Module',
     ],
 ],
 ```
@@ -154,7 +154,7 @@ I've created a helper command to copy the files for you.
 (https://github.com/yiisoft/yii2-app-basic) app, you can call the default command without any options
 
 ```
-php yii user/copy --from=@vendor/amnah/yii2-user/amnah/yii2/user --to=@app/modules/user --namespace=app\\modules\\user
+php yii user/copy --from=@vendor/filsh/yii2-user/filsh/yii2/user --to=@app/modules/user --namespace=app\\modules\\user
 ```
 
 * Update config to point to your new package
@@ -169,7 +169,7 @@ php yii user/copy --from=@vendor/amnah/yii2-user/amnah/yii2/user --to=@app/modul
 ```
 
 **Alternatively,** you can do this manually. Just copy/paste the files wherever you'd like and
-change the namespaces in the files. Replace ```amnah\yii2\user``` with ```app\modules\user```.
+change the namespaces in the files. Replace ```filsh\yii2\user``` with ```app\modules\user```.
 
 ### Changelog
 * 2014/4/17 - Release 1.0.0-beta
@@ -177,4 +177,4 @@ change the namespaces in the files. Replace ```amnah\yii2\user``` with ```app\mo
 ### Todo
 * Tests
 * Add functionality for user groups (possibly as another package)
-* Issues/requests? Submit a [github issue](https://github.com/amnah/yii2-user/issues)
+* Issues/requests? Submit a [github issue](https://github.com/filsh/yii2-user/issues)
