@@ -70,7 +70,26 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function tableName()
     {
-        return static::getDb()->tablePrefix . 'user';
+        return '{{%user}}';
+    }
+    
+    /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return [
+            'timestamp' => [
+                'class' => 'yii\behaviors\TimestampBehavior',
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => 'create_time',
+                    ActiveRecord::EVENT_BEFORE_UPDATE => 'update_time',
+                ],
+                'value' => function() {
+                    return date('Y-m-d H:i:s');
+                },
+            ],
+        ];
     }
 
     /**
@@ -78,27 +97,26 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function rules()
     {
-
         // set initial rules
         $rules = [
-        // general email and username rules
-        [['email', 'username'], 'string', 'max' => 255],
-        [['email', 'username'], 'unique'],
-        [['email', 'username'], 'filter', 'filter' => 'trim'],
-        [['email'], 'email'],
-        [['username'], 'match', 'pattern' => '/^[A-Za-z0-9_]+$/u', 'message' => '{attribute} can contain only letters, numbers, and \'_\'.'],
-        // password rules
-        [['newPassword'], 'string', 'min' => 3],
-        [['newPassword'], 'filter', 'filter' => 'trim'],
-        [['newPassword'], 'required', 'on' => [self::SCENARIO_REGISTER]],
-        // account page
-        [['currentPassword'], 'required', 'on' => [self::SCENARIO_ACCOUNT]],
-        [['currentPassword'], 'validateCurrentPassword', 'on' => [self::SCENARIO_ACCOUNT]],
-        // admin crud rules
-        [['role_id', 'status'], 'required', 'on' => [self::SCENARIO_ADMIN]],
-        [['role_id', 'status'], 'integer', 'on' => [self::SCENARIO_ADMIN]],
-        [['ban_time'], 'integer', 'on' => [self::SCENARIO_ADMIN]],
-        [['ban_reason'], 'string', 'max' => 255, 'on' => self::SCENARIO_ADMIN],
+            // general email and username rules
+            [['email', 'username'], 'string', 'max' => 255],
+            [['email', 'username'], 'unique'],
+            [['email', 'username'], 'filter', 'filter' => 'trim'],
+            [['email'], 'email'],
+            [['username'], 'match', 'pattern' => '/^[A-Za-z0-9_]+$/u', 'message' => '{attribute} can contain only letters, numbers, and \'_\'.'],
+            // password rules
+            [['newPassword'], 'string', 'min' => 3],
+            [['newPassword'], 'filter', 'filter' => 'trim'],
+            [['newPassword'], 'required', 'on' => [self::SCENARIO_REGISTER]],
+            // account page
+            [['currentPassword'], 'required', 'on' => [self::SCENARIO_ACCOUNT]],
+            [['currentPassword'], 'validateCurrentPassword', 'on' => [self::SCENARIO_ACCOUNT]],
+            // admin crud rules
+            [['role_id', 'status'], 'required', 'on' => [self::SCENARIO_ADMIN]],
+            [['role_id', 'status'], 'integer', 'on' => [self::SCENARIO_ADMIN]],
+            [['ban_time'], 'integer', 'on' => [self::SCENARIO_ADMIN]],
+            [['ban_reason'], 'string', 'max' => 255, 'on' => self::SCENARIO_ADMIN],
         ];
 
         // add required rules for email/username depending on module properties
@@ -182,25 +200,6 @@ class User extends ActiveRecord implements IdentityInterface
     {
         $role = Yii::$app->getModule('user')->model('Role');
         return $this->hasOne($role::className(), ['id' => 'role_id']);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function behaviors()
-    {
-        return [
-            'timestamp' => [
-                'class' => 'yii\behaviors\TimestampBehavior',
-                'attributes' => [
-                    ActiveRecord::EVENT_BEFORE_INSERT => 'create_time',
-                    ActiveRecord::EVENT_BEFORE_UPDATE => 'update_time',
-                ],
-                'value' => function() {
-                    return date('Y-m-d H:i:s');
-                },
-            ],
-        ];
     }
 
     /**

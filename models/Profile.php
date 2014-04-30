@@ -23,7 +23,7 @@ class Profile extends ActiveRecord
      */
     public static function tableName()
     {
-        return static::getDb()->tablePrefix . 'profile';
+        return '{{%profile}}';
     }
 
     /**

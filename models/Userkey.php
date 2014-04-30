@@ -42,7 +42,7 @@ class Userkey extends ActiveRecord
      */
     public static function tableName()
     {
-        return static::getDb()->tablePrefix . 'userkey';
+        return '{{%userkey}}';
     }
 
     /**

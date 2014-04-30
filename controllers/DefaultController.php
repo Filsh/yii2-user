@@ -58,7 +58,6 @@ class DefaultController extends Controller
      */
     public function actionIndex()
     {
-
         // display debug page if YII_DEBUG is set
         if (defined('YII_DEBUG') && YII_DEBUG) {
             $actions = Yii::$app->getModule('user')->getActions();
@@ -79,7 +78,6 @@ class DefaultController extends Controller
      */
     public function actionLogin()
     {
-
         // load data from $_POST and attempt login
         /** @var \filsh\yii2\user\models\forms\LoginForm $model */
         $model = Yii::$app->getModule('user')->model('LoginForm');
@@ -129,7 +127,7 @@ class DefaultController extends Controller
                 $role = Yii::$app->getModule('user')->model('Role');
                 $user->register($role::ROLE_USER, Yii::$app->request->userIP);
                 $profile->register($user->id);
-                $this->_calcEmailOrLogin($user);
+                $this->sendEmailOrLogin($user);
 
                 // set flash
                 // dont use $this->refresh() because user may automatically be logged in and get 403 forbidden
@@ -151,9 +149,8 @@ class DefaultController extends Controller
      *
      * @param \filsh\yii2\user\models\User $user
      */
-    protected function _calcEmailOrLogin($user)
+    protected function sendEmailOrLogin($user)
     {
-
         // determine userkey type to see if we need to send email
         /** @var \filsh\yii2\user\models\User $user */
         /** @var \filsh\yii2\user\models\Userkey $userkey */
@@ -187,7 +184,6 @@ class DefaultController extends Controller
      */
     public function actionConfirm($key)
     {
-
         // search for userkey
         /** @var \filsh\yii2\user\models\Userkey $userkey */
         $success = false;
@@ -218,7 +214,6 @@ class DefaultController extends Controller
      */
     public function actionAccount()
     {
-
         // set up user/profile and attempt to load data from $_POST
         /** @var \filsh\yii2\user\models\User $user */
         $user = Yii::$app->user->identity;
@@ -265,7 +260,6 @@ class DefaultController extends Controller
      */
     public function actionProfile()
     {
-
         // set up profile and attempt to load data from $_POST
         /** @var \filsh\yii2\user\models\Profile $profile */
         $profile = Yii::$app->user->identity->profile;
@@ -295,7 +289,6 @@ class DefaultController extends Controller
      */
     public function actionResend()
     {
-
         // attempt to load $_POST data, validate, and send email
         /** @var \filsh\yii2\user\models\forms\ResendForm $model */
         $model = Yii::$app->getModule('user')->model('ResendForm');
@@ -340,7 +333,6 @@ class DefaultController extends Controller
      */
     public function actionCancel()
     {
-
         // attempt to find userkey
         /** @var \filsh\yii2\user\models\Userkey $userkey */
         $userkey = Yii::$app->getModule('user')->model('Userkey');
@@ -367,7 +359,6 @@ class DefaultController extends Controller
      */
     public function actionForgot()
     {
-
         // attempt to load $_POST data, validate, and send email
         /** @var \filsh\yii2\user\models\forms\ForgotForm $model */
         $model = Yii::$app->getModule('user')->model('ForgotForm');
@@ -389,7 +380,6 @@ class DefaultController extends Controller
      */
     public function actionReset($key)
     {
-
         // check for invalid userkey
         /** @var \filsh\yii2\user\models\Userkey $userkey */
         $userkey = Yii::$app->getModule('user')->model('Userkey');

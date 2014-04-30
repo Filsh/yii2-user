@@ -11,8 +11,8 @@ use yii\base\InvalidConfigException;
  *
  * @author amnah <amnah.dev@gmail.com>
  */
-class Module extends \yii\base\Module {
-
+class Module extends \yii\base\Module
+{
     /**
      * @var string Module version
      */
@@ -113,22 +113,23 @@ class Module extends \yii\base\Module {
      * Get module version
      * @return string
      */
-    public function getVersion() {
+    public function getVersion()
+    {
         return $this->_version;
     }
 
     /**
      * @inheritdoc
      */
-    public function init() {
-
+    public function init()
+    {
         parent::init();
 
         // check for valid email/username properties
-        $this->_checkEmailUsername();
+        $this->checkEmailUsername();
 
         // override modelClasses
-        $this->modelClasses = array_merge($this->_getDefaultModelClasses(), $this->modelClasses);
+        $this->modelClasses = array_merge($this->getDefaultModelClasses(), $this->modelClasses);
 
         // set alias
         $this->setAliases([
@@ -139,13 +140,13 @@ class Module extends \yii\base\Module {
     /**
      * Check for valid email/username properties
      */
-    protected function _checkEmailUsername() {
-
+    protected function checkEmailUsername()
+    {
         // set use fields based on required fields
-        if ($this->requireEmail) {
+        if($this->requireEmail) {
             $this->useEmail = true;
         }
-        if ($this->requireUsername) {
+        if($this->requireUsername) {
             $this->useUsername = true;
         }
 
@@ -153,15 +154,15 @@ class Module extends \yii\base\Module {
         $className = get_called_class();
 
         // check required fields
-        if (!$this->requireEmail and !$this->requireUsername) {
+        if(!$this->requireEmail and !$this->requireUsername) {
             throw new InvalidConfigException("{$className}: \$requireEmail and/or \$requireUsername must be true");
         }
         // check login fields
-        if (!$this->loginEmail and !$this->loginUsername) {
+        if(!$this->loginEmail and !$this->loginUsername) {
             throw new InvalidConfigException("{$className}: \$loginEmail and/or \$loginUsername must be true");
         }
         // check email fields with emailConfirmation/emailChangeConfirmation is true
-        if (!$this->useEmail and ($this->emailConfirmation or $this->emailChangeConfirmation)) {
+        if(!$this->useEmail and ($this->emailConfirmation or $this->emailChangeConfirmation)) {
             $msg = "{$className}: \$useEmail must be true if \$email(Change)Confirmation is true";
             throw new InvalidConfigException($msg);
         }
@@ -170,8 +171,8 @@ class Module extends \yii\base\Module {
     /**
      * Get default model classes
      */
-    protected function _getDefaultModelClasses() {
-        
+    protected function getDefaultModelClasses()
+    {
         // use single quotes so nothing gets escaped
         return [
             'User' => 'filsh\yii2\user\models\User',
@@ -192,10 +193,10 @@ class Module extends \yii\base\Module {
      * @param array $config
      * @return ActiveRecord
      */
-    public function model($name, $config = []) {
-
+    public function model($name, $config = [])
+    {
         // return object if already created
-        if (!empty($this->_models[$name])) {
+        if(!empty($this->_models[$name])) {
             return $this->_models[$name];
         }
 
@@ -217,28 +218,26 @@ class Module extends \yii\base\Module {
      *
      * @inheritdoc
      */
-    public function createController($route) {
-
+    public function createController($route)
+    {
         // check valid routes
         $validRoutes = [$this->defaultRoute, "admin", "copy"];
         $isValidRoute = false;
-        foreach ($validRoutes as $validRoute) {
-            if (strpos($route, $validRoute) === 0) {
+        foreach($validRoutes as $validRoute) {
+            if(strpos($route, $validRoute) === 0) {
                 $isValidRoute = true;
                 break;
             }
         }
 
-        return (empty($route) or $isValidRoute)
-            ? parent::createController($route)
-            : parent::createController("{$this->defaultRoute}/{$route}");
+        return (empty($route) or $isValidRoute) ? parent::createController($route) : parent::createController("{$this->defaultRoute}/{$route}");
     }
 
     /**
      * Get a list of actions for this module. Used for debugging/initial installations
      */
-    public function getActions() {
-
+    public function getActions()
+    {
         return [
             "User" => "/{$this->id}",
             "Admin" => "/{$this->id}/admin",
@@ -264,7 +263,6 @@ class Module extends \yii\base\Module {
                 "url" => "/{$this->id}/cancel",
                 "description" => "Cancel email change confirmation. <br/>This and ResendChange appear on the 'Account' page",
             ],
-
             "Confirm" => [
                 "url" => "/{$this->id}/confirm?key=xxxxxxxxx",
                 "description" => "Confirm email address. Automatically generated with key",

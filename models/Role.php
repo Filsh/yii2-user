@@ -39,7 +39,7 @@ class Role extends ActiveRecord
      */
     public static function tableName()
     {
-        return static::getDb()->tablePrefix . 'role';
+        return '{{%role}}';
     }
 
     /**
