@@ -165,7 +165,7 @@ class Userkey extends ActiveRecord
                 'type' => $type,
                 'consume_time' => null,
             ])
-            ->andWhere("([[expire_time]] >= '$now' or [[expire_time]] is NULL)")
+            ->andWhere('([[expire_time]] >= "' . $now . '" or [[expire_time]] is NULL)')
             ->one();
     }
 

@@ -285,7 +285,9 @@ class User extends ActiveRecord implements IdentityInterface
         
         if($numSent === false) {
             Yii::error(sprintf('Failed to send email \'%s\' with subject \'%s\'', $email, $subject), __CLASS__);
+            return false;
         }
+        return true;
     }
     
     /**
