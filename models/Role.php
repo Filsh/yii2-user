@@ -45,6 +45,22 @@ class Role extends ActiveRecord
     /**
      * @inheritdoc
      */
+    public function behaviors()
+    {
+        return [
+            'timestamp' => [
+                'class' => 'yii\behaviors\TimestampBehavior',
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => 'create_time',
+                    ActiveRecord::EVENT_BEFORE_UPDATE => 'update_time',
+                ]
+            ],
+        ];
+    }
+    
+    /**
+     * @inheritdoc
+     */
     public function rules()
     {
         return [
@@ -76,25 +92,6 @@ class Role extends ActiveRecord
     {
         $user = Yii::$app->getModule('user')->model('User');
         return $this->hasMany($user::className(), ['role_id' => 'id']);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function behaviors()
-    {
-        return [
-            'timestamp' => [
-                'class' => 'yii\behaviors\TimestampBehavior',
-                'attributes' => [
-                    ActiveRecord::EVENT_BEFORE_INSERT => 'create_time',
-                    ActiveRecord::EVENT_BEFORE_UPDATE => 'update_time',
-                ],
-                'value' => function() {
-                    return date('Y-m-d H:i:s');
-                },
-            ],
-        ];
     }
 
     /**

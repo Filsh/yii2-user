@@ -79,10 +79,7 @@ class User extends ActiveRecord implements IdentityInterface
                 'attributes' => [
                     ActiveRecord::EVENT_BEFORE_INSERT => 'create_time',
                     ActiveRecord::EVENT_BEFORE_UPDATE => 'update_time',
-                ],
-                'value' => function() {
-                    return date('Y-m-d H:i:s');
-                },
+                ]
             ],
         ];
     }
@@ -124,6 +121,16 @@ class User extends ActiveRecord implements IdentityInterface
         }
 
         return $rules;
+    }
+    
+    /**
+     * @inheritdoc
+     */
+    public function scenarios()
+    {
+        return array_merge(parent::scenarios(), [
+            self::SCENARIO_REGISTER => ['email', 'username', 'password']
+        ]);
     }
 
     /**

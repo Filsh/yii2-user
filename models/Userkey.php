@@ -47,6 +47,22 @@ class Userkey extends ActiveRecord
     /**
      * @inheritdoc
      */
+    public function behaviors()
+    {
+        return [
+            'timestamp' => [
+                'class' => 'yii\behaviors\TimestampBehavior',
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => 'create_time',
+                    ActiveRecord::EVENT_BEFORE_UPDATE => 'update_time',
+                ]
+            ],
+        ];
+    }
+    
+    /**
+     * @inheritdoc
+     */
     public function rules()
     {
         return [
@@ -67,9 +83,9 @@ class Userkey extends ActiveRecord
             'user_id' => 'User ID',
             'type' => 'Type',
             'key' => 'Key',
+            'expire_time' => 'Expire Time',
             'create_time' => 'Create Time',
             'update_time' => 'Update Time',
-            'expire_time' => 'Expire Time',
         ];
     }
 
@@ -81,26 +97,7 @@ class Userkey extends ActiveRecord
         $user = Yii::$app->getModule('user')->model('User');
         return $this->hasOne($user::className(), ['id' => 'user_id']);
     }
-
-    /**
-     * @inheritdoc
-     */
-    public function behaviors()
-    {
-        return [
-            'timestamp' => [
-                'class' => 'yii\behaviors\TimestampBehavior',
-                'attributes' => [
-                    // set only create_time because there is no update_time
-                    ActiveRecord::EVENT_BEFORE_INSERT => ['create_time'],
-                ],
-                'value' => function() {
-                    return date('Y-m-d H:i:s');
-                },
-            ],
-        ];
-    }
-
+    
     /**
      * Generate and return a new userkey
      *

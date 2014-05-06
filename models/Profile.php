@@ -6,13 +6,18 @@ use Yii;
 use yii\db\ActiveRecord;
 
 /**
- * Profile model
+ * This is the model class for table "profile".
  *
- * @property int $id
- * @property int $user_id
- * @property string $create_time
- * @property string $update_time
- * @property string $full_name
+ * @property integer $id
+ * @property string $user_id
+ * @property string $first_name
+ * @property string $last_name
+ * @property integer $birth_day
+ * @property integer $birth_month
+ * @property integer $birth_year
+ * @property string $gender
+ * @property integer $create_time
+ * @property integer $update_time
  *
  * @property User $user
  */
@@ -29,13 +34,40 @@ class Profile extends ActiveRecord
     /**
      * @inheritdoc
      */
+    public function behaviors()
+    {
+        return [
+            'timestamp' => [
+                'class' => 'yii\behaviors\TimestampBehavior',
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => 'create_time',
+                    ActiveRecord::EVENT_BEFORE_UPDATE => 'update_time',
+                ]
+            ],
+        ];
+    }
+    
+    /**
+     * @inheritdoc
+     */
     public function rules()
     {
         return [
             [['user_id'], 'required', 'except' => [User::SCENARIO_REGISTER]],
-            [['user_id'], 'integer'],
-            [['full_name'], 'string', 'max' => 255]
+            [['user_id', 'birth_day', 'birth_month', 'birth_year'], 'integer'],
+            [['gender'], 'string'],
+            [['first_name', 'last_name'], 'string', 'max' => 255]
         ];
+    }
+    
+    /**
+     * @inheritdoc
+     */
+    public function scenarios()
+    {
+        return array_merge(parent::scenarios(), [
+            User::SCENARIO_REGISTER => ['user_id', 'first_name', 'last_name', 'birth_day', 'birth_month', 'birth_year', 'gender']
+        ]);
     }
 
     /**
@@ -46,38 +78,24 @@ class Profile extends ActiveRecord
         return [
             'id' => 'ID',
             'user_id' => 'User ID',
-            'full_name' => 'Full Name',
+            'first_name' => 'First Name',
+            'last_name' => 'Last Name',
+            'birth_day' => 'Birth Day',
+            'birth_month' => 'Birth Month',
+            'birth_year' => 'Birth Year',
+            'gender' => 'Gender',
             'create_time' => 'Create Time',
             'update_time' => 'Update Time',
         ];
     }
 
     /**
-     * @return \yii\db\ActiveRelation
+     * @return \yii\db\ActiveQuery
      */
     public function getUser()
     {
         $user = Yii::$app->getModule('user')->model('User');
         return $this->hasOne($user::className(), ['id' => 'user_id']);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function behaviors()
-    {
-        return [
-            'timestamp' => [
-                'class' => 'yii\behaviors\TimestampBehavior',
-                'attributes' => [
-                    ActiveRecord::EVENT_BEFORE_INSERT => 'create_time',
-                    ActiveRecord::EVENT_BEFORE_UPDATE => 'update_time',
-                ],
-                'value' => function() {
-                    return date('Y-m-d H:i:s');
-                },
-            ],
-        ];
     }
 
     /**
@@ -91,7 +109,7 @@ class Profile extends ActiveRecord
         $this->user_id = $userId;
         $this->save();
         return $this;
-    }
+}
 
     /**
      * Set user id for profile
