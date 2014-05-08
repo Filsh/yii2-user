@@ -77,7 +77,7 @@ class User extends ActiveRecord implements IdentityInterface
             'timestamp' => [
                 'class' => 'yii\behaviors\TimestampBehavior',
                 'attributes' => [
-                    ActiveRecord::EVENT_BEFORE_INSERT => 'create_time',
+                    ActiveRecord::EVENT_BEFORE_INSERT => ['create_time', 'update_time'],
                     ActiveRecord::EVENT_BEFORE_UPDATE => 'update_time',
                 ]
             ],
@@ -163,6 +163,17 @@ class User extends ActiveRecord implements IdentityInterface
             'create_time' => 'Create Time',
             'update_time' => 'Update Time'
         ];
+    }
+    
+    public function getStatusLabel()
+    {
+        $labels = [
+            self::STATUS_INACTIVE => 'inactive',
+            self::STATUS_ACTIVE => 'active',
+            self::STATUS_UNCONFIRMED_EMAIL => 'unconfirmed'
+        ];
+        
+        return isset($labels[$this->status]) ? $labels[$this->status] : null;
     }
 
     /**
