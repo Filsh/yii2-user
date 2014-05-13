@@ -23,6 +23,12 @@ use yii\db\ActiveRecord;
  */
 class Profile extends ActiveRecord
 {
+    public static $genderMap = [
+        0 => 'none',
+        1 => 'male',
+        2 => 'female'
+    ];
+    
     /**
      * @inheritdoc
      */
@@ -55,7 +61,17 @@ class Profile extends ActiveRecord
         return [
             [['user_id'], 'required', 'except' => [User::SCENARIO_REGISTER]],
             [['user_id', 'birth_day', 'birth_month', 'birth_year'], 'integer'],
+            [['gender'], 'filter', 'filter' => function($value) {
+                $none = self::$genderMap[0];
+                if(empty($value)) {
+                    return $none;
+                } else if(is_int($value)) {
+                    return isset(self::$genderMap[$value]) ? self::$genderMap[$value] : $none;
+                }
+                return $value;
+            }],
             [['gender'], 'string'],
+            [['gender'], 'in', 'range' => self::$genderMap],
             [['first_name', 'last_name'], 'string', 'max' => 255]
         ];
     }
