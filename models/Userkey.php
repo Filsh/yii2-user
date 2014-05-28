@@ -173,7 +173,7 @@ class Userkey extends ActiveRecord
      */
     public function consume()
     {
-        $this->consume_time = date('Y-m-d H:i:s');
+        $this->consume_time = time();
         $this->save(false);
         return $this;
     }
@@ -185,7 +185,7 @@ class Userkey extends ActiveRecord
      */
     public function expire()
     {
-        $this->expire_time = date('Y-m-d H:i:s');
+        $this->expire_time = time();
         $this->save(false);
         return $this;
     }
