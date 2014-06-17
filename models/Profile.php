@@ -26,7 +26,8 @@ class Profile extends ActiveRecord
     public static $genderMap = [
         0 => 'none',
         1 => 'male',
-        2 => 'female'
+        2 => 'female',
+        3 => 'other'
     ];
     
     /**
@@ -67,6 +68,8 @@ class Profile extends ActiveRecord
                     return $none;
                 } else if(is_int($value)) {
                     return isset(self::$genderMap[$value]) ? self::$genderMap[$value] : $none;
+                } else if(!in_array($value, self::$genderMap)) {
+                    return $none;
                 }
                 return $value;
             }],
