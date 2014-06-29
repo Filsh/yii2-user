@@ -4,7 +4,6 @@ namespace filsh\yii2\user\models;
 
 use Yii;
 use yii\db\ActiveRecord;
-use yii\helpers\Security;
 
 /**
  * Userkey model
@@ -118,7 +117,7 @@ class Userkey extends ActiveRecord
         // set/update data
         $model->user_id = $userId;
         $model->type = $type;
-        $model->key = Security::generateRandomKey();
+        $model->key = Yii::$app->getSecurity()->generateRandomKey();
         $model->create_time = date('Y-m-d H:i:s');
         $model->expire_time = $expireTime;
         $model->save(false);

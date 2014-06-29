@@ -7,7 +7,6 @@ use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
 use yii\swiftmailer\Mailer;
 use yii\helpers\Inflector;
-use yii\helpers\Security;
 use ReflectionClass;
 
 /**
@@ -351,10 +350,10 @@ class User extends ActiveRecord implements IdentityInterface
 
         // generate auth_key and api_key if needed
         if (!$this->auth_key) {
-            $this->auth_key = Security::generateRandomKey();
+            $this->auth_key = Yii::$app->getSecurity()->generateRandomKey();
         }
         if (!$this->api_key) {
-            $this->api_key = Security::generateRandomKey();
+            $this->api_key = Yii::$app->getSecurity()->generateRandomKey();
         }
 
 
@@ -379,7 +378,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function encryptPassword()
     {
-        $this->password = Security::generatePasswordHash($this->password);
+        $this->password = Yii::$app->getSecurity()->generatePasswordHash($this->password);
         return $this;
     }
 
@@ -391,7 +390,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function verifyPassword($password)
     {
-        return Security::validatePassword($password, $this->password);
+        return Yii::$app->getSecurity()->validatePassword($password, $this->password);
     }
 
     /**
