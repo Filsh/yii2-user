@@ -1,6 +1,7 @@
 <?php
 
 use yii\db\Schema;
+use yii\db\Expression;
 use filsh\yii2\user\models\Profile;
 use filsh\yii2\user\models\Role;
 use filsh\yii2\user\models\User;
@@ -78,9 +79,9 @@ class m131114_141544_add_user extends \yii\db\Migration
             // note: i create a guest role because i like to give guest users the ability to use the site
             //       without registering. you can delete it if you want
             $this->batchInsert(filsh\yii2\user\models\Role::tableName(), ['name', 'can_admin', 'create_time', 'update_time'], [
-                ['Admin', 1, 'NOW()', 'NOW()'],
-                ['User', 0, 'NOW()', 'NOW()'],
-                ['Guest', 0, 'NOW()', 'NOW()'],
+                ['Admin', 1, new Expression('UNIX_TIMESTAMP()'), new Expression('UNIX_TIMESTAMP()')],
+                ['User', 0, new Expression('UNIX_TIMESTAMP()'), new Expression('UNIX_TIMESTAMP()')],
+                ['Guest', 0, new Expression('UNIX_TIMESTAMP()'), new Expression('UNIX_TIMESTAMP()')],
             ]);
             
             $transaction->commit();
