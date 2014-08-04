@@ -117,7 +117,7 @@ class Userkey extends ActiveRecord
         // set/update data
         $model->user_id = $userId;
         $model->type = $type;
-        $model->key = Yii::$app->getSecurity()->generateRandomKey();
+        $model->key = Yii::$app->getSecurity()->generateRandomString();
         $model->create_time = date('Y-m-d H:i:s');
         $model->expire_time = $expireTime;
         $model->save(false);

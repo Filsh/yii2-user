@@ -350,10 +350,10 @@ class User extends ActiveRecord implements IdentityInterface
 
         // generate auth_key and api_key if needed
         if (!$this->auth_key) {
-            $this->auth_key = Yii::$app->getSecurity()->generateRandomKey();
+            $this->auth_key = Yii::$app->getSecurity()->generateRandomString();
         }
         if (!$this->api_key) {
-            $this->api_key = Yii::$app->getSecurity()->generateRandomKey();
+            $this->api_key = Yii::$app->getSecurity()->generateRandomString();
         }
 
 
