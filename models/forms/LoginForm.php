@@ -49,19 +49,9 @@ class LoginForm extends Model
      */
     public function validateUser()
     {
-        // check for valid user
         $user = $this->getUser();
         if (!$user) {
-
-            // calculate error message
-            if (Yii::$app->getModule('user')->loginEmail and Yii::$app->getModule('user')->loginUsername) {
-                $errorAttribute = 'Email/username';
-            } elseif (Yii::$app->getModule('user')->loginEmail) {
-                $errorAttribute = 'Email';
-            } else {
-                $errorAttribute = 'Username';
-            }
-            $this->addError('username', '$errorAttribute not found');
+            $this->addError('username', Yii::t('app', '{username} not found', ['username' => $this->getAttributeLabel('username')]));
         }
     }
 
@@ -75,7 +65,7 @@ class LoginForm extends Model
 
         // check for ban status
         if ($user->ban_time) {
-            $this->addError('username', 'User is banned - {$user->ban_reason}');
+            $this->addError('username', 'User is banned - ' . $user->ban_reason);
         }
         // check for inactive status and resend email
         if ($user->status == $user::STATUS_INACTIVE) {
@@ -139,22 +129,32 @@ class LoginForm extends Model
     public function attributeLabels()
     {
         // calculate attribute label for 'username'
-        $attribute = Yii::$app->getModule('user')->requireEmail ? 'Email' : 'Username';
+        // calculate error message
+        if (Yii::$app->getModule('user')->loginEmail && Yii::$app->getModule('user')->loginUsername) {
+            $username = 'Email/username';
+        } elseif (Yii::$app->getModule('user')->loginEmail) {
+            $username = 'Email';
+        } else {
+            $username = 'Username';
+        }
+        
         return [
-            'username' => $attribute,
+            'username' => $username,
+            'password' => 'Password'
         ];
     }
 
     /**
      * Validate and log user in
      *
-     * @param int $loginDuration
+     * @param int $duration
      * @return bool
      */
-    public function login($loginDuration)
+    public function login($duration = 0)
     {
         if ($this->validate()) {
-            return Yii::$app->user->login($this->getUser(), $this->rememberMe ? $loginDuration : 0);
+            $duration = $this->rememberMe ? $duration : 0;
+            return Yii::$app->user->login($this->getUser(), $duration);
         }
 
         return false;
